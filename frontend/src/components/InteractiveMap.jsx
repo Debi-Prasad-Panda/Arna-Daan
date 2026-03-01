@@ -53,6 +53,19 @@ function MapController({ flyTarget, zoomCmd }) {
   return null;
 }
 
+// Forces Leaflet to recalculate tile grid when container is resized/remounted
+function MapResizer() {
+  const map = useMap();
+  useEffect(() => {
+    // Small delay lets the flexbox layout settle before we invalidate
+    const t = setTimeout(() => {
+      map.invalidateSize({ animate: false });
+    }, 100);
+    return () => clearTimeout(t);
+  }, [map]);
+  return null;
+}
+
 // ----- Static fallback route (shown when no Appwrite delivery is live) -----
 const DEMO_ROUTE = {
   pickup:  { lat: 20.2961, lng: 85.8245, name: 'City Hospital Canteen',  address: '123 Hospital Rd, Bhubaneswar' },

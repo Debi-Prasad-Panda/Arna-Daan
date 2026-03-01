@@ -1,0 +1,10 @@
+{
+  "name": "update-user-role",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Appwrite Function — update a user's role in their account prefs (admin-only)",
+  "main": "src/main.js",
+  "dependencies": {
+    "node-appwrite": "^13.0.0"
+  }
+}

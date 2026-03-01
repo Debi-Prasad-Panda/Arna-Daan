@@ -1,0 +1,10 @@
+{
+  "name": "notify-on-claim",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Appwrite Function — send email notifications when a food claim status changes",
+  "main": "src/main.js",
+  "dependencies": {
+    "node-appwrite": "^13.0.0"
+  }
+}

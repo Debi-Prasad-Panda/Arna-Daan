@@ -220,7 +220,7 @@ export default function TrackingTimeline() {
   }
 
   return (
-    <div className="w-full md:w-1/3 flex flex-col bg-[#181210] h-1/2 md:h-full overflow-hidden">
+    <div className="w-full flex flex-col h-full bg-[#181210] overflow-hidden">
 
       {/* Header */}
       <div className="p-5 pb-0">

@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import useUserProfileStore from '../store/userProfileStore'
 import { useRealtime } from '../hooks/useRealtime'
+import { databases, APPWRITE_CONFIG } from '../lib/appwrite'
 import toast from 'react-hot-toast'
 
 // Placeholder colours for avatars
@@ -45,12 +46,55 @@ export default function KycTable() {
     p.role?.toLowerCase().includes(search.toLowerCase())
   )
 
-  const approveUser = async (profile) => {
-    toast.success(`${profile.name} approved! (Would set status in Appwrite.)`)
-  }
+  const [promotingId, setPromotingId] = useState(null)
 
-  const rejectUser = async (profile) => {
-    toast.error(`${profile.name} rejected. (Would update status in Appwrite.)`)
+  const promoteUser = async (profile, newRole) => {
+    if (profile.role === newRole) return
+    const confirmed = window.confirm(`Change ${profile.name}'s role from "${profile.role}" to "${newRole}"?`)
+    if (!confirmed) return
+
+    const tid = toast.loading(`Updating ${profile.name} to ${newRole}…`)
+    setPromotingId(profile.$id)
+    try {
+      const functionId = import.meta.env.VITE_ROLE_UPDATE_FUNCTION_ID
+      if (functionId) {
+        // Call the Appwrite Function endpoint (server-side, uses API key)
+        const endpoint = import.meta.env.VITE_APPWRITE_ENDPOINT?.replace('/v1', '')
+        const res = await fetch(
+          `${endpoint}/v1/functions/${functionId}/executions`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Appwrite-Project': import.meta.env.VITE_APPWRITE_PROJECT_ID,
+            },
+            body: JSON.stringify({ async: false, body: JSON.stringify({ userId: profile.userId, newRole }) }),
+          }
+        )
+        const result = await res.json()
+        if (!result?.responseBody?.ok && result?.status !== 'completed') {
+          throw new Error(result?.responseBody?.error || 'Function returned failure')
+        }
+      }
+
+      // Update the profile document in our Users collection so the table refreshes
+      const usersCollectionId = import.meta.env.VITE_APPWRITE_USERS_COLLECTION_ID
+      if (usersCollectionId) {
+        await databases.updateDocument(
+          APPWRITE_CONFIG.databaseId,
+          usersCollectionId,
+          profile.$id,
+          { role: newRole }
+        )
+      }
+
+      toast.success(`${profile.name} is now a ${newRole}!`, { id: tid })
+      fetchProfiles()
+    } catch (e) {
+      toast.error(e.message || 'Role update failed', { id: tid })
+    } finally {
+      setPromotingId(null)
+    }
   }
 
   return (
@@ -147,21 +191,37 @@ export default function KycTable() {
                     </span>
                   </td>
                   <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => approveUser(profile)}
-                        className="p-1.5 rounded-lg hover:bg-green-600/20 text-[#d6c1ba] hover:text-green-500 transition-colors"
-                        title="Approve"
-                      >
-                        <span className="material-symbols-outlined">check_circle</span>
-                      </button>
-                      <button
-                        onClick={() => rejectUser(profile)}
-                        className="p-1.5 rounded-lg hover:bg-red-600/20 text-[#d6c1ba] hover:text-red-500 transition-colors"
-                        title="Reject"
-                      >
-                        <span className="material-symbols-outlined">cancel</span>
-                      </button>
+                    <div className="flex items-center justify-end gap-2">
+                      {promotingId === profile.$id ? (
+                        <span className="material-symbols-outlined animate-spin text-primary">refresh</span>
+                      ) : (
+                        <div className="relative group/promote">
+                          <button
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#4a352f] text-[#d6c1ba] text-xs font-medium hover:bg-[#4a352f] hover:text-white transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">manage_accounts</span>
+                            Promote
+                          </button>
+                          {/* Role dropdown */}
+                          <div className="absolute right-0 top-full mt-1 w-40 bg-[#2f1d17] border border-[#4a352f] shadow-2xl rounded-xl py-1.5 z-50 opacity-0 invisible group-hover/promote:opacity-100 group-hover/promote:visible transition-all">
+                            {['donor','ngo','volunteer','admin'].map(role => (
+                              <button
+                                key={role}
+                                onClick={() => promoteUser(profile, role)}
+                                className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors flex items-center gap-2 ${
+                                  profile.role === role
+                                    ? 'text-primary bg-primary/10 cursor-default'
+                                    : 'text-[#d6c1ba] hover:bg-[#4a352f] hover:text-white'
+                                }`}
+                              >
+                                <span className="material-symbols-outlined text-[13px]">{ROLE_ICON[role] || 'person'}</span>
+                                <span className="capitalize">{role}</span>
+                                {profile.role === role && <span className="ml-auto material-symbols-outlined text-[12px]">check</span>}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </td>
                 </tr>
