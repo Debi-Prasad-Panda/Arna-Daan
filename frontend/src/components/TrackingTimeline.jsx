@@ -97,10 +97,21 @@ export default function TrackingTimeline() {
       {/* Action Button */}
       <div className="p-6 bg-[#23140f]">
         <button 
-          onClick={() => {
-            import('react-hot-toast').then(({ default: toast }) => {
-              toast.success('Mission accepted! You are now the assigned driver.');
-            });
+          onClick={async () => {
+            const { default: toast } = await import('react-hot-toast');
+            
+            // In a real app, you would pass the specific request ID here
+            // We'll use a dummy ID for the UI interaction demonstration
+            const dummyRequestId = "REQ-" + Math.floor(Math.random() * 10000);
+            
+            const toastId = toast.loading('Accepting mission...');
+            try {
+              // await acceptMission(dummyRequestId);
+              // For now, since we might not have a valid Request ID in the DB during this demo:
+              toast.success('Mission accepted! You are now the assigned driver.', { id: toastId });
+            } catch(e) {
+              toast.error(e.message || 'Failed to accept mission', { id: toastId });
+            }
           }}
           className="w-full group flex items-center justify-center gap-3 rounded-xl h-14 bg-primary hover:bg-[#e55a2b] transition-all shadow-lg shadow-primary/25 active:scale-[0.98]"
         >

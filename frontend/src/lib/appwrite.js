@@ -11,5 +11,7 @@ export const storage = new Storage(client);
 export const APPWRITE_CONFIG = {
     databaseId: import.meta.env.VITE_APPWRITE_DATABASE_ID,
     listingsCollectionId: import.meta.env.VITE_APPWRITE_LISTINGS_COLLECTION_ID,
+    requestsCollectionId: import.meta.env.VITE_APPWRITE_REQUESTS_COLLECTION_ID,
+    deliveriesCollectionId: import.meta.env.VITE_APPWRITE_DELIVERIES_COLLECTION_ID,
     bucketId: import.meta.env.VITE_APPWRITE_BUCKET_ID,
 };

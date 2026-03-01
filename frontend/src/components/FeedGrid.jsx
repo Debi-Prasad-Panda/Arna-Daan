@@ -74,7 +74,11 @@ const CARDS = [
   },
 ]
 
+import useRequestStore from '../store/requestStore'
+
 function FeedCard({ card }) {
+  const createRequest = useRequestStore(state => state.createRequest)
+
   return (
     <div className="group bg-[#2c1a15] rounded-xl overflow-hidden border border-[#3a2c27] hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
       {/* Image Header */}
@@ -138,10 +142,21 @@ function FeedCard({ card }) {
         {/* Action Button */}
         <div className="mt-auto pt-4 border-t border-[#3a2c27] flex gap-3">
           <button 
-            onClick={() => {
-              import('react-hot-toast').then(({ default: toast }) => {
-                toast.success('Food claim requested! The donor will be notified.');
-              });
+            onClick={async () => {
+              const { default: toast } = await import('react-hot-toast');
+              
+              if (typeof card.id === 'number') {
+                toast.success('Food claim requested! (Simulated for this dummy listing)');
+                return;
+              }
+
+              const toastId = toast.loading('Sending request...');
+              try {
+                await createRequest(card.id);
+                toast.success('Food claim requested! The donor will be notified.', { id: toastId });
+              } catch(e) {
+                toast.error(e.message || 'Failed to claim food', { id: toastId });
+              }
             }}
             className="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2"
           >

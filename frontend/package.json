@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "appwrite": "^22.4.1",
+    "cross-env": "^10.1.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.34.3",
     "lucide-react": "^0.575.0",
+    "node-appwrite": "^22.1.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hot-toast": "^2.6.0",
