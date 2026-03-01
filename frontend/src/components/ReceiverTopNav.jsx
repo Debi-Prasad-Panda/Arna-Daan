@@ -3,8 +3,9 @@ import useAuthStore from '../store/authStore'
 
 const NAV_ITEMS = [
   { label: 'Receiver Feed', href: '/feed' },
-  { label: 'Community', href: '/community' },
-  { label: 'Profile', href: '/profile' },
+  { label: 'My Claims',     href: '/claims' },
+  { label: 'Community',     href: '/community' },
+  { label: 'Profile',       href: '/profile' },
 ]
 
 export default function ReceiverTopNav() {

@@ -4,7 +4,7 @@ import ActiveListings from '../components/ActiveListings'
 import IncomingRequests from '../components/IncomingRequests'
 import useAuthStore from '../store/authStore'
 import useListingStore from '../store/listingStore'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 
 const STATS = [
   {
@@ -31,26 +31,26 @@ const STATS = [
   },
 ]
 
-function StatCard({ stat }) {
+function StatCard({ label, value, unit, trend, trendUp, icon, iconColor, progress }) {
   return (
     <div className="flex flex-col p-5 bg-[#23140f] border border-[#3a2c27] rounded-xl relative overflow-hidden group">
       <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity select-none">
-        <span className={`material-symbols-outlined text-6xl ${stat.iconColor}`}>{stat.icon}</span>
+        <span className={`material-symbols-outlined text-6xl ${iconColor}`}>{icon}</span>
       </div>
-      <p className="text-[#bca39a] text-sm font-medium">{stat.label}</p>
+      <p className="text-[#bca39a] text-sm font-medium">{label}</p>
       <p className="text-3xl font-bold mt-1 text-white">
-        {stat.value}
-        {stat.unit && <span className="text-lg text-[#bca39a] font-normal ml-1">{stat.unit}</span>}
+        {value}
+        {unit && <span className="text-lg text-[#bca39a] font-normal ml-1">{unit}</span>}
       </p>
-      {stat.trend && (
-        <div className="flex items-center gap-1 mt-2 text-green-500 text-xs font-bold">
-          <span className="material-symbols-outlined text-sm">trending_up</span>
-          <span>{stat.trend}</span>
+      {trend && (
+        <div className={`flex items-center gap-1 mt-2 text-xs font-bold ${trendUp ? 'text-green-500' : 'text-[#bca39a]'}`}>
+          <span className="material-symbols-outlined text-sm">{trendUp ? 'trending_up' : 'horizontal_rule'}</span>
+          <span>{trend}</span>
         </div>
       )}
-      {stat.progress !== undefined && (
+      {progress !== undefined && (
         <div className="mt-2 h-1.5 w-full bg-[#3a2c27] rounded-full overflow-hidden">
-          <div className="h-full bg-green-500 rounded-full" style={{ width: `${stat.progress}%` }} />
+          <div className="h-full bg-green-500 rounded-full" style={{ width: `${progress}%` }} />
         </div>
       )}
     </div>
@@ -59,8 +59,23 @@ function StatCard({ stat }) {
 
 export default function DonorDashboard() {
   const user = useAuthStore(state => state.user)
-  const { fetchListings } = useListingStore()
+  const { listings, fetchListings } = useListingStore()
   useEffect(() => { fetchListings() }, [])
+
+  // Compute real stats from this donor's listings
+  const myListings   = listings.filter(l => l.donorId === user?.$id)
+  const totalMeals   = myListings.reduce((s, l) => s + (Number(l.quantity) || 0), 0)
+  const peopleFed    = Math.round(totalMeals * 0.9)
+  const co2Saved     = Math.round(totalMeals * 2.5)
+  const co2Goal      = 1000
+
+  // Monthly trend — count listings created this calendar month vs last
+  const now = new Date()
+  const thisMonth = myListings.filter(l => {
+    const d = new Date(l.$createdAt || l.createdAt || 0)
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+  }).length
+  const trend = thisMonth > 0 ? `+${thisMonth} this month` : 'No listings yet'
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#181210', color: '#ffffff' }}>
       <DashboardTopNav />
@@ -75,7 +90,9 @@ export default function DonorDashboard() {
             <p className="text-[#bca39a]">Your contributions are changing lives daily. Track your surplus and impact here.</p>
           </div>
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {STATS.map((s) => <StatCard key={s.label} stat={s} />)}
+            <StatCard label="Total Meals Donated" value={totalMeals.toLocaleString('en-IN')} icon="restaurant" iconColor="text-primary" trend={trend} trendUp={thisMonth > 0} />
+            <StatCard label="People Fed" value={peopleFed.toLocaleString('en-IN')} icon="groups" iconColor="text-blue-400" trend={`~90% of servings`} trendUp />
+            <StatCard label="CO₂ Saved" value={co2Saved.toLocaleString('en-IN')} unit="kg" icon="co2" iconColor="text-green-400" progress={Math.min((co2Saved / co2Goal) * 100, 100)} />
           </div>
         </section>
 

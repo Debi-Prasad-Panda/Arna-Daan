@@ -8,10 +8,13 @@ import DonorDashboard from './pages/DonorDashboard'
 import ReceiverFeed from './pages/ReceiverFeed'
 import VolunteerLogistics from './pages/VolunteerLogistics'
 import AdminPanel from './pages/AdminPanel'
+import AdminAnalytics from './pages/AdminAnalytics'
+import AdminSettings from './pages/AdminSettings'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import CommunityPage from './pages/CommunityPage'
 import ProfilePage from './pages/ProfilePage'
+import MyClaimsPage from './pages/MyClaimsPage'
 import NotFound from './pages/NotFound'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -48,12 +51,15 @@ export default function App() {
 
         {/* Protected routes — requires login */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard"  element={<DonorDashboard />} />
-          <Route path="/feed"       element={<ReceiverFeed />} />
-          <Route path="/logistics"  element={<VolunteerLogistics />} />
-          <Route path="/admin"      element={<AdminPanel />} />
-          <Route path="/community"  element={<CommunityPage />} />
-          <Route path="/profile"    element={<ProfilePage />} />
+          <Route path="/dashboard"        element={<DonorDashboard />} />
+          <Route path="/feed"             element={<ReceiverFeed />} />
+          <Route path="/claims"           element={<MyClaimsPage />} />
+          <Route path="/logistics"        element={<VolunteerLogistics />} />
+          <Route path="/admin"            element={<AdminPanel />} />
+          <Route path="/admin/analytics"  element={<AdminAnalytics />} />
+          <Route path="/admin/settings"   element={<AdminSettings />} />
+          <Route path="/community"        element={<CommunityPage />} />
+          <Route path="/profile"          element={<ProfilePage />} />
         </Route>
 
         {/* 404 catch-all */}
