@@ -1,4 +1,7 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import useAuthStore from './store/authStore'
+
 import LandingPage from './pages/LandingPage'
 import DonorDashboard from './pages/DonorDashboard'
 import ReceiverFeed from './pages/ReceiverFeed'
@@ -19,6 +22,12 @@ const ComingSoon = ({ title }) => (
 )
 
 export default function App() {
+  const checkAuth = useAuthStore(state => state.checkAuth);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   return (
     <BrowserRouter>
       <Routes>

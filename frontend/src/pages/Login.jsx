@@ -1,6 +1,30 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import useAuthStore from '../store/authStore'
 
 export default function Login() {
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+
+  const login = useAuthStore(state => state.login)
+  const isLoading = useAuthStore(state => state.isLoading)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!email || !password) {
+      setError('Please enter your email and password.')
+      return
+    }
+    setError('')
+    try {
+      await login(email, password)
+      navigate('/dashboard') // Route based on user type later
+    } catch (err) {
+      setError(err.message || 'Login failed. Please check your credentials.')
+    }
+  }
   return (
     <div className="min-h-screen flex font-display text-white bg-[#181210]">
       {/* Left Side - Image & Branding */}
@@ -42,7 +66,13 @@ export default function Login() {
             <p className="text-[#bca39a]">Log in to access your dashboard</p>
           </div>
 
-          <form className="flex flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl p-3 text-sm font-medium">
+                {error}
+              </div>
+            )}
+            
             {/* Email Input */}
             <div>
               <label className="block text-sm font-bold text-[#d6c1ba] mb-2" htmlFor="email">
@@ -53,6 +83,8 @@ export default function Login() {
                 <input
                   id="email"
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   className="w-full bg-[#281e1b] border-2 border-[#3a2c27] text-white rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-[#5a433a] font-medium"
                 />
@@ -74,6 +106,8 @@ export default function Login() {
                 <input
                   id="password"
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full bg-[#281e1b] border-2 border-[#3a2c27] text-white rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-[#5a433a] font-medium"
                 />
@@ -83,10 +117,19 @@ export default function Login() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-primary hover:bg-[#e65020] text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-primary/25 transition-all active:scale-[0.98] mt-2 flex justify-center items-center gap-2 group"
+              disabled={isLoading}
+              className={`w-full bg-primary hover:bg-[#e65020] text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-primary/25 transition-all active:scale-[0.98] mt-2 flex justify-center items-center gap-2 group ${
+                isLoading ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
             >
-              Sign In
-              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              {isLoading ? (
+                <span className="material-symbols-outlined animate-spin">refresh</span>
+              ) : (
+                <>
+                  Sign In
+                  <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </>
+              )}
             </button>
           </form>
 

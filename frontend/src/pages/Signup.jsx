@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import useAuthStore from '../store/authStore'
 
 const ROLES = [
   { id: 'donor', label: 'Donor', icon: 'restaurant', desc: 'I want to donate food' },
@@ -8,7 +9,32 @@ const ROLES = [
 ]
 
 export default function Signup() {
+  const navigate = useNavigate()
   const [selectedRole, setSelectedRole] = useState('donor')
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  
+  const register = useAuthStore(state => state.register)
+  const isLoading = useAuthStore(state => state.isLoading)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!name || !email || !password) {
+      setError('Please fill in all fields.')
+      return
+    }
+    setError('')
+    try {
+      await register(email, password, name)
+      if (selectedRole === 'donor') navigate('/dashboard')
+      else if (selectedRole === 'ngo') navigate('/feed')
+      else navigate('/logistics')
+    } catch (err) {
+      setError(err.message || 'Registration failed.')
+    }
+  }
 
   return (
     <div className="min-h-screen flex font-display text-white bg-[#181210]">
@@ -53,8 +79,14 @@ export default function Signup() {
             <p className="text-[#bca39a]">Sign up to start making an impact</p>
           </div>
 
-          <form className="flex flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl p-3 text-sm font-medium">
+                {error}
+              </div>
+            )}
+
             {/* Role Selection */}
             <div>
               <label className="block text-sm font-bold text-[#d6c1ba] mb-3">
@@ -103,6 +135,8 @@ export default function Signup() {
                 <input
                   id="name"
                   type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   placeholder={selectedRole === 'ngo' ? 'Hope Foundation' : 'John Doe'}
                   className="w-full bg-[#281e1b] border-2 border-[#3a2c27] text-white rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-[#5a433a] font-medium"
                 />
@@ -119,6 +153,8 @@ export default function Signup() {
                 <input
                   id="email"
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   className="w-full bg-[#281e1b] border-2 border-[#3a2c27] text-white rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-[#5a433a] font-medium"
                 />
@@ -135,6 +171,8 @@ export default function Signup() {
                 <input
                   id="password"
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full bg-[#281e1b] border-2 border-[#3a2c27] text-white rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-[#5a433a] font-medium"
                 />
@@ -145,9 +183,16 @@ export default function Signup() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-primary hover:bg-[#e65020] text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-primary/25 transition-all active:scale-[0.98] mt-4"
+              disabled={isLoading}
+              className={`w-full bg-primary hover:bg-[#e65020] text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-primary/25 transition-all active:scale-[0.98] mt-4 flex justify-center items-center ${
+                isLoading ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
             >
-              Start {selectedRole === 'donor' ? 'Donating' : selectedRole === 'ngo' ? 'Receiving' : 'Volunteering'}
+              {isLoading ? (
+                <span className="material-symbols-outlined animate-spin">refresh</span>
+              ) : (
+                `Start ${selectedRole === 'donor' ? 'Donating' : selectedRole === 'ngo' ? 'Receiving' : 'Volunteering'}`
+              )}
             </button>
           </form>
 
