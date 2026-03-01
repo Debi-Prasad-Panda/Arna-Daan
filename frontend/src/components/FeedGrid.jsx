@@ -1,8 +1,9 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState, lazy, Suspense } from 'react'
 import useListingStore from '../store/listingStore'
 import useRequestStore from '../store/requestStore'
 import { useRealtime } from '../hooks/useRealtime'
 import { APPWRITE_CONFIG } from '../lib/appwrite'
+import DirectionsModal from './DirectionsModal'
 
 // ── Fallback demo cards shown when no real Appwrite listings exist ──
 const MOCK_CARDS = [
@@ -112,13 +113,15 @@ const FOOD_IMAGES = [
 ]
 
 function FeedCard({ card, index = 0 }) {
+  const [directionsOpen, setDirectionsOpen] = useState(false)
   const timeLabel = getTimeLabel(card.bestBefore)
-  const urgent = isUrgent(card.bestBefore)
-  const catIcon = CATEGORY_ICON[card.category] || 'restaurant'
-  const imgSrc = card.img || FOOD_IMAGES[index % FOOD_IMAGES.length]
-  const cardId = card.$id || card.id
+  const urgent    = isUrgent(card.bestBefore)
+  const catIcon   = CATEGORY_ICON[card.category] || 'restaurant'
+  const imgSrc    = card.img || FOOD_IMAGES[index % FOOD_IMAGES.length]
+  const cardId    = card.$id || card.id
 
   return (
+    <>
     <div className="group flex flex-col bg-[#23140f] border border-[#3a2c27] rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer">
       {/* Image area */}
       <div className="relative h-48 overflow-hidden">
@@ -179,7 +182,18 @@ function FeedCard({ card, index = 0 }) {
           )}
         </div>
 
-        <div className="mt-auto pt-4 border-t border-[#3a2c27]">
+        <div className="mt-auto pt-4 border-t border-[#3a2c27] flex gap-2">
+          {/* Get Directions */}
+          <button
+            onClick={() => setDirectionsOpen(true)}
+            title="Get directions to pickup"
+            className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg border border-[#3a2c27] text-[#bca39a] hover:text-white hover:border-blue-400/60 hover:bg-blue-500/10 transition-all text-sm font-semibold shrink-0"
+          >
+            <span className="material-symbols-outlined text-[18px] text-blue-400">directions</span>
+            Directions
+          </button>
+
+          {/* Claim Now */}
           <button
             onClick={async () => {
               const { default: toast } = await import('react-hot-toast')
@@ -196,7 +210,7 @@ function FeedCard({ card, index = 0 }) {
                 toast.error(e.message || 'Failed to claim food', { id: toastId })
               }
             }}
-            className="w-full bg-primary hover:bg-orange-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+            className="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2"
           >
             <span>Claim Now</span>
             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -204,10 +218,16 @@ function FeedCard({ card, index = 0 }) {
         </div>
       </div>
     </div>
+
+    {/* Directions modal — rendered at FeedCard level, portal-style via fixed positioning */}
+    {directionsOpen && (
+      <DirectionsModal listing={card} onClose={() => setDirectionsOpen(false)} />
+    )}
+  </>
   )
 }
 
-export default function FeedGrid() {
+export default function FeedGrid({ activeFilter = 'all', urgentOnly = false }) {
   const { listings, isLoading, fetchListings } = useListingStore()
 
   useEffect(() => {
@@ -220,8 +240,30 @@ export default function FeedGrid() {
   }, [])
   useRealtime(APPWRITE_CONFIG.listingsCollectionId, handleListingEvent)
 
-  // Use real Appwrite data if available, otherwise show demo cards
-  const displayCards = listings.length > 0 ? listings : MOCK_CARDS
+  // ── Filter logic ─────────────────────────────────────────────────────────────
+  function applyFilters(cards) {
+    let result = cards
+    // Category / diet filter
+    if (activeFilter !== 'all') {
+      result = result.filter(c => {
+        // 'Veg' / 'Non-Veg' match the diet field
+        if (activeFilter === 'Veg' || activeFilter === 'Non-Veg') {
+          return c.diet === activeFilter
+        }
+        // Everything else matches the category field
+        return c.category === activeFilter
+      })
+    }
+    // Urgency filter — cards expiring within 4 hours
+    if (urgentOnly) {
+      result = result.filter(c => isUrgent(c.bestBefore))
+    }
+    return result
+  }
+
+  // Use real Appwrite data if available, otherwise fall back to demo cards
+  const baseCards    = listings.length > 0 ? listings : MOCK_CARDS
+  const displayCards = applyFilters(baseCards)
 
   return (
     <>
@@ -240,17 +282,28 @@ export default function FeedGrid() {
         </div>
       ) : (
         <>
-          {listings.length === 0 && (
+          {listings.length === 0 && activeFilter === 'all' && !urgentOnly && (
             <div className="flex items-center gap-3 py-3 px-5 bg-[#3a2c27]/30 border border-dashed border-[#3a2c27] rounded-xl mb-6 text-[#bca39a] text-sm">
               <span className="material-symbols-outlined text-xl text-primary">info</span>
               No live listings yet — showing demo cards. Real donations will appear here once donors post them.
             </div>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayCards.map((c, i) => (
-              <FeedCard key={c.$id || c.id} card={c} index={i} />
-            ))}
-          </div>
+
+          {displayCards.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
+              <span className="material-symbols-outlined text-6xl text-[#3a2c27]">search_off</span>
+              <div>
+                <p className="text-white font-bold text-lg">No listings match this filter</p>
+                <p className="text-[#bca39a] text-sm mt-1">Try a different category or remove the High Need filter.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {displayCards.map((c, i) => (
+                <FeedCard key={c.$id || c.id} card={c} index={i} />
+              ))}
+            </div>
+          )}
         </>
       )}
 
