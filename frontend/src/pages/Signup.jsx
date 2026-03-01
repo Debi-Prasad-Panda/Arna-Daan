@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, Navigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
 
 const ROLES = [
@@ -18,6 +18,7 @@ export default function Signup() {
   
   const register = useAuthStore(state => state.register)
   const isLoading = useAuthStore(state => state.isLoading)
+  const user = useAuthStore(state => state.user)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -34,6 +35,11 @@ export default function Signup() {
     } catch (err) {
       setError(err.message || 'Registration failed.')
     }
+  }
+
+  // Redirect if already logged in
+  if (user && !isLoading) {
+    return <Navigate to="/dashboard" replace />
   }
 
   return (

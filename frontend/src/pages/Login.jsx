@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, Navigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
 
 export default function Login() {
@@ -10,6 +10,7 @@ export default function Login() {
 
   const login = useAuthStore(state => state.login)
   const isLoading = useAuthStore(state => state.isLoading)
+  const user = useAuthStore(state => state.user)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -25,6 +26,12 @@ export default function Login() {
       setError(err.message || 'Login failed. Please check your credentials.')
     }
   }
+
+  // Redirect if already logged in
+  if (user && !isLoading) {
+    return <Navigate to="/dashboard" replace />
+  }
+
   return (
     <div className="min-h-screen flex font-display text-white bg-[#181210]">
       {/* Left Side - Image & Branding */}

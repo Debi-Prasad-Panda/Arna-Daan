@@ -1,4 +1,5 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import useAuthStore from '../store/authStore'
 
 const NAV_ITEMS = [
   { label: 'Receiver Feed', href: '/feed' },
@@ -6,10 +7,16 @@ const NAV_ITEMS = [
   { label: 'Impact', href: '/impact' },
 ]
 
-const PROFILE_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuD2t6tpUYRghIKDCEGXQ-xgMdFUS2UnYsbkoqpCU3fKntth2MunOJ8XXowBZNnfZ-awC6Q0-yFXfy1_ckr6qtlUwS_aJldlOG7kWuLCQoZY5ANErNV1FKkPf80WpT0ElmXWboyxQKlLHwCeag94mIo89A5qHB57WjSsabuGztLNIdheCJkK8s48Ef7OlbRVRqsS9ZEFTCn7vR9uwGuZNN2kv6fdwdorA5YMA7lq8ZvaD1RU5D_M2gkYi6qgfvjX8FRlPOvtTcJHvg'
-
 export default function ReceiverTopNav() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const user = useAuthStore(state => state.user)
+  const logout = useAuthStore(state => state.logout)
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login')
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#3a2c27]/50 bg-[#181210]/95 backdrop-blur-md px-6 py-4 lg:px-12">
@@ -53,13 +60,31 @@ export default function ReceiverTopNav() {
 
           <div className="h-6 w-px bg-[#3a2c27] hidden lg:block" />
 
-          <div className="flex items-center gap-3">
-            <button className="flex items-center justify-center size-10 rounded-full hover:bg-[#3a2c27] text-[#bca39a] transition-colors relative">
-              <span className="material-symbols-outlined">notifications</span>
-              <span className="absolute top-2 right-2 size-2 bg-primary rounded-full" />
-            </button>
-            <div className="h-10 w-10 rounded-full bg-[#3a2c27] overflow-hidden border border-[#3a2c27] cursor-pointer">
-              <img src={PROFILE_IMG} alt="User Profile" className="h-full w-full object-cover" />
+          <div className="flex items-center gap-3 pl-2">
+            <div className="hidden sm:flex flex-col items-end mr-2">
+              <span className="text-sm font-bold text-white leading-tight">
+                {user?.name || 'NGO User'}
+              </span>
+              <span className="text-xs text-[#bca39a] uppercase tracking-wider font-semibold">
+                Receiver
+              </span>
+            </div>
+
+            <div className="relative group cursor-pointer">
+              <div className="flex items-center justify-center size-10 rounded-full overflow-hidden border-2 border-[#3a2c27] hover:border-primary transition-colors bg-[#281e1b]">
+                <span className="material-symbols-outlined text-[#d6c1ba]">domain</span>
+              </div>
+              
+              {/* Dropdown Menu */}
+              <div className="absolute right-0 top-full mt-2 w-48 bg-[#281e1b] border border-[#3a2c27] shadow-xl rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                <button 
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-red-400 font-medium hover:bg-[#3a2c27] transition-colors flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">logout</span>
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import useAuthStore from '../store/authStore'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', icon: 'dashboard', href: '/admin-dashboard' },
@@ -10,6 +11,14 @@ const NAV_ITEMS = [
 
 export default function AdminSidebar() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const user = useAuthStore(state => state.user)
+  const logout = useAuthStore(state => state.logout)
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login')
+  }
 
   return (
     <aside className="w-full md:w-72 bg-[#2f1d17] border-r border-[#4a352f] flex flex-col h-full min-h-screen md:sticky md:top-0">
@@ -17,15 +26,13 @@ export default function AdminSidebar() {
         
         {/* User Profile */}
         <div className="flex items-center gap-4">
-          <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
-            <img 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC_mC1TuGjhh_cVGzJ5dzRADtP-gb8MbDbnvbitqKsh_XHEuze0VycbxtA5ZKs5QGHE5Wxb1FCXLVShdmVbRC82CCYnz2RwBSRwK1_GqEuGZ7GSNopGxGCorgSw0gYcUhxAs2gotK1zZaldubePaaDZxjIUl2bU-klJPDc0bPpGPM9rtTwObwSDwta4er1CZn6u2fMhqO1M5jvt_nTd_VJsOa-girRwTPzg3PSF-jgpKpwCvWtIjQY7jZIKIkaD0W2uSeIZ2mqDg" 
-              alt="Admin profile" 
-              className="w-full h-full object-cover" 
-            />
+          <div className="flex items-center justify-center relative w-12 h-12 bg-[#181210] rounded-full overflow-hidden border-2 border-primary">
+            <span className="material-symbols-outlined text-[#d6c1ba]">admin_panel_settings</span>
           </div>
           <div className="flex flex-col">
-            <h1 className="text-white text-lg font-bold leading-tight">Annadaan Admin</h1>
+            <h1 className="text-white text-lg font-bold leading-tight truncate w-40">
+              {user?.name || 'Annadaan Admin'}
+            </h1>
             <p className="text-[#d6c1ba] text-xs font-medium uppercase tracking-wider">Super Admin</p>
           </div>
         </div>
@@ -57,7 +64,10 @@ export default function AdminSidebar() {
 
       {/* Footer / Logout */}
       <div className="p-6 border-t border-[#4a352f]">
-        <button className="w-full flex items-center justify-center gap-2 rounded-xl h-11 px-4 bg-[#4a352f] hover:bg-red-900/40 text-[#d6c1ba] hover:text-red-400 transition-all font-bold text-sm">
+        <button 
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 rounded-xl h-11 px-4 bg-[#4a352f] hover:bg-red-900/40 text-[#d6c1ba] hover:text-red-400 transition-all font-bold text-sm"
+        >
           <span className="material-symbols-outlined text-lg">logout</span>
           Logout
         </button>

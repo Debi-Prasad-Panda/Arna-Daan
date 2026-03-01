@@ -1,5 +1,6 @@
 // Shared sidebar/topnav for donor dashboard screens
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import useAuthStore from '../store/authStore'
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: 'dashboard' },
@@ -8,10 +9,16 @@ const navItems = [
   { label: 'Impact', href: '/impact', icon: 'trending_up' },
 ]
 
-const PROFILE_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCyCQcEfpln9MZ9ap8_d3__9OOJkQgkMUC54pEEmPeoeXLWMtBu-tbiCCSluYbB14XhUb7CgMKpFVoLCfc0SE86sH-313NWSfpYxNPbgQHd05zd81NNCNIWPZnCSQfrR6wwhGSi67Ip9CSiqYxH8U5C2N623TbuC4oTRXYwxww4CpBXYm7AY-p2Zfz96VxTrQtmoUQ7RVyBoHQa9hRfkBcAP3c28uhGe8ihjsdXcuszuVK4ZhY8ut0Vzcwc6QqmCegqN8a5hZf1-A'
-
 export default function DashboardTopNav() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const user = useAuthStore(state => state.user)
+  const logout = useAuthStore(state => state.logout)
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login')
+  }
 
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between border-b border-[#3a2c27] bg-[#181210]/80 backdrop-blur-md px-6 py-4 lg:px-10">
@@ -49,8 +56,33 @@ export default function DashboardTopNav() {
           <span className="mr-2 material-symbols-outlined text-[18px]">add_circle</span>
           New Donation
         </Link>
-        <div className="relative size-10 rounded-full overflow-hidden border border-[#3a2c27] cursor-pointer">
-          <img src={PROFILE_IMG} alt="User Profile" className="object-cover w-full h-full" />
+        
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex flex-col items-end mr-2">
+            <span className="text-sm font-bold text-white leading-tight">
+              {user?.name || 'Donor User'}
+            </span>
+            <span className="text-xs text-[#bca39a] uppercase tracking-wider font-semibold">
+              Donor
+            </span>
+          </div>
+
+          <div className="relative group cursor-pointer">
+            <div className="flex items-center justify-center size-10 rounded-full overflow-hidden border-2 border-[#3a2c27] hover:border-primary transition-colors bg-[#281e1b]">
+              <span className="material-symbols-outlined text-[#bca39a]">person</span>
+            </div>
+            
+            {/* Dropdown Menu */}
+            <div className="absolute right-0 top-full mt-2 w-48 bg-[#281e1b] border border-[#3a2c27] shadow-xl rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+              <button 
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-2 text-sm text-red-400 font-medium hover:bg-[#3a2c27] transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">logout</span>
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </header>
