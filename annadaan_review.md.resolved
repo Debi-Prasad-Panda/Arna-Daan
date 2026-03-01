@@ -1,0 +1,185 @@
+# Annadaan — Complete Project Plan
+
+## 1. Product Vision
+
+A real-time platform bridging food surplus and scarcity, eliminating urban food waste through an intuitive digital experience.
+
+---
+
+## 2. User Personas
+
+| Persona | Description | Goal |
+|---------|------------|------|
+| **Donor** | Restaurants, banquet halls, individuals with surplus food | Quickly list food before it spoils |
+| **Receiver** | Verified NGOs, orphanages, community kitchens | Find nearby food, claim & coordinate pickup |
+| **Volunteer** | Individuals willing to transport food | Accept delivery tasks by location |
+| **Admin** | Platform moderator | Approve KYC, ban users, view analytics |
+
+---
+
+## 3. Tech Stack
+
+| Layer | Choice |
+|-------|--------|
+| Frontend | React.js (SPA) |
+| Styling | Tailwind CSS |
+| Backend/DB/Auth/Storage | **Appwrite Cloud (Free Tier)** |
+| Maps | React-Leaflet + OpenStreetMap (free) |
+| Image Compression | `browser-image-compression` (client-side, <500KB) |
+| PWA | Service Worker for offline route viewing |
+
+---
+
+## 4. Finalized Decisions
+
+### 4.1 Appwrite Cloud (Free Tier)
+No self-hosting. Cloud gives instant access to Databases, Auth, Storage, Functions. Focus stays on frontend + core logic.
+
+### 4.2 Admin Panel — `/admin` Protected Route
+Lightweight admin dashboard in the React app with:
+- KYC document approval/rejection
+- User ban/management
+- **Platform Stats card**: Total Users, Total Listings, Meals Delivered Today, Pending KYC
+- Global metrics (Total Meals Saved, Active Volunteers)
+
+### 4.3 Notifications — In-App + Email
+- **In-App**: Appwrite Realtime → bell icon that lights up on events (claim, delivery update)
+- **Email**: Appwrite SMTP for critical events (account approval, KYC status)
+- No push notifications (saves significant dev time)
+
+### 4.4 Volunteer Assignment — Proximity Broadcast (FCFS)
+When an NGO claims food, broadcast to all logged-in volunteers within **5km radius**. First to hit "Accept Route" gets the job.
+- **30-minute timeout**: If no volunteer accepts, notify receiver to arrange own pickup.
+
+### 4.5 Image Handling
+Client-side compression via `browser-image-compression` → shrink to **<500KB** before uploading to Appwrite Storage.
+
+---
+
+## 5. Core Features
+
+### 5.1 Smart Dashboard (Role-Based)
+- **Donor**: Total meals donated, active listings, impact chart
+- **Receiver**: Nearby food feed, claim history, "High Need" toggle
+- **Volunteer**: Active routes, leaderboard rank, delivery history
+
+### 5.2 Real-Time Geo-Mapping
+Interactive Leaflet map showing food drop-offs/pickups. Sorted by proximity using Appwrite Functions.
+
+### 5.3 One-Click Claim System
+Frictionless claim button → instantly updates status network-wide via Appwrite Realtime (no double-booking).
+
+### 5.4 Live Status Tracking
+Visual timeline: `Listed → Claimed → In Transit → Delivered` (like modern delivery apps).
+
+### 5.5 QR Code Handover + Food Safety Checklist
+- **Before listing**: Donor completes a "Food Temp & Safety" checkbox (stored properly, within safe temp, etc.) — handles liability.
+- **At pickup**: Donor scans volunteer's app QR code to confirm handover — handles trust verification.
+
+### 5.6 Impact Dashboard (Public Landing Page)
+**Before login**, show real-time counters:
+- 🍽️ Total Meals Saved
+- 👥 Active Donors
+- 🚴 Active Volunteers
+
+Immediately communicates value to evaluators and visitors.
+
+### 5.7 Trust & Verification (KYC)
+Quick upload portal for NGOs. Admin approves/rejects from the admin panel.
+
+### 5.8 Digital Liability Waiver
+Legal checkbox/digital signature at handover. Protects donor after food leaves their premises.
+
+### 5.9 Scheduled/Recurring Donations
+Bakeries/buffets set recurring listings (e.g., "5kg bread every night at 10:30 PM").
+
+### 5.10 Urgent Broadcast System
+NGOs flip a "High Need" switch → nearby donors get an in-app alert that food is urgently needed.
+
+### 5.11 Volunteer Gamification
+- Point system (10 pts/delivery)
+- Monthly leaderboard
+- Digital badges ("Food Hero", "Midnight Rider")
+- Delivery rating (1-5 stars from receiver)
+
+### 5.12 Expiry Auto-Cleanup
+Appwrite Function (CRON every 15 min) marks listings past `expiryTime` as `EXPIRED`. Keeps feed clean. ~20 lines of code.
+
+---
+
+## 6. Database Schema
+
+### Collection: `users`
+```
+userId          (String, Appwrite Auth ID)
+role            (Enum: Donor, Receiver, Volunteer, Admin)
+organizationName (String, Optional)
+contactPhone    (String)
+kycVerified     (Boolean, default: false)
+location        (GeoJSON coordinates)
+totalMealsDonated (Integer, default: 0)
+$createdAt      (auto)
+$updatedAt      (auto)
+```
+
+### Collection: `listings`
+```
+donorId         (String → Users)
+foodType        (Enum: Veg, Non-Veg, Packaged)
+quantity        (Integer: meals or kg)
+description     (String: brief note about the food)
+expiryTime      (Datetime)
+imageId         (String → Appwrite Storage)
+status          (Enum: Available, Claimed, In-Transit, Completed, Expired)
+$createdAt      (auto)
+$updatedAt      (auto)
+```
+
+### Collection: `deliveries`
+```
+listingId       (String → Listings)
+receiverId      (String → Users)
+volunteerId     (String → Users, nullable until accepted)
+status          (Enum: Pending, Accepted, PickedUp, Delivered)
+handoverCode    (String: 4-digit PIN / QR payload)
+rating          (Integer 1-5, nullable)
+completedAt     (Datetime, nullable)
+$createdAt      (auto)
+$updatedAt      (auto)
+```
+
+---
+
+## 7. Non-Functional Requirements
+
+- **Responsiveness**: Tailwind breakpoints (sm/md/lg/xl), mobile-first, no horizontal scroll
+- **Performance**: Feed loads <2s, images compressed client-side
+- **Security**: Passwords hashed (bcrypt via Appwrite), timestamps enforce food safety
+- **Accessibility**: High contrast, ARIA labels, keyboard nav
+- **Dark Mode**: AMOLED-friendly for battery savings
+- **PWA**: Offline access to active routes/delivery addresses
+
+---
+
+## 8. UI/UX Guidelines
+
+- **Mobile-first**, thumb-friendly navigation
+- **Color palette**: Deep greens (sustainability) + warm oranges (food/energy) + clean whites
+- **Suggested gradient**: `#FF6B35` (orange) → `#2E7D32` (green)
+- **Dark mode base**: `#121212`
+- **Micro-interactions**: Framer Motion / CSS transitions for buttons, forms, page transitions
+- **Card-based listings**: Food photo, Veg 🟢/Non-Veg 🔴 badge, distance, expiry countdown
+- **Split-screen layouts**: Info/form on left, map on right
+
+---
+
+## 9. Development Timeline
+
+| Phase | Scope | Week |
+|-------|-------|------|
+| 1 | Auth + Role selection + User profile + Landing page with Impact Dashboard | 1 |
+| 2 | Donor: Create listing (with safety checklist) + photo upload + dashboard | 2 |
+| 3 | Receiver: Feed + Map + Claim system + Urgent Broadcast | 3 |
+| 4 | Live tracking + Volunteer flow (broadcast, QR handover) + Notifications | 4 |
+| 5 | Admin panel + KYC approval + Leaderboard + Analytics | 5 |
+| 6 | PWA + Dark mode + Recurring donations + Expiry cleanup + Polish | 6 |
