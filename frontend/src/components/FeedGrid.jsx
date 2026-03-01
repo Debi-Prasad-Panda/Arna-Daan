@@ -1,6 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import useListingStore from '../store/listingStore'
 import useRequestStore from '../store/requestStore'
+import { useRealtime } from '../hooks/useRealtime'
+import { APPWRITE_CONFIG } from '../lib/appwrite'
 
 // ── Fallback demo cards shown when no real Appwrite listings exist ──
 const MOCK_CARDS = [
@@ -211,6 +213,12 @@ export default function FeedGrid() {
   useEffect(() => {
     fetchListings()
   }, [])
+
+  // 🔴 Realtime: re-fetch whenever any listing is created, updated, or deleted
+  const handleListingEvent = useCallback(() => {
+    fetchListings()
+  }, [])
+  useRealtime(APPWRITE_CONFIG.listingsCollectionId, handleListingEvent)
 
   // Use real Appwrite data if available, otherwise show demo cards
   const displayCards = listings.length > 0 ? listings : MOCK_CARDS

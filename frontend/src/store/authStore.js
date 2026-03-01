@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { account } from '../lib/appwrite';
 import { ID } from 'appwrite';
+import useUserProfileStore from './userProfileStore';
 
 // Map a role string to the right dashboard route
 export function getHomeRoute(role) {
@@ -35,6 +36,8 @@ const useAuthStore = create((set) => ({
             // Persist the chosen role in Appwrite user prefs
             await account.updatePrefs({ role });
             const user = await account.get();
+            // Also create a profile document so the Admin KYC table can list users
+            await useUserProfileStore.getState().createProfile(user.$id, name, email, role);
             set({ user, role, isLoading: false });
         } catch (error) {
             set({ isLoading: false });
