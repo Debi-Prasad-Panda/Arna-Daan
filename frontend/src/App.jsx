@@ -10,19 +10,22 @@ import VolunteerLogistics from './pages/VolunteerLogistics'
 import AdminPanel from './pages/AdminPanel'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import CommunityPage from './pages/CommunityPage'
+import ProfilePage from './pages/ProfilePage'
+import NotFound from './pages/NotFound'
 import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
-  const checkAuth = useAuthStore(state => state.checkAuth);
+  const checkAuth = useAuthStore(state => state.checkAuth)
 
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    checkAuth()
+  }, [checkAuth])
 
   return (
     <BrowserRouter>
-      <Toaster 
-        position="bottom-center" 
+      <Toaster
+        position="bottom-center"
         toastOptions={{
           duration: 3000,
           style: {
@@ -33,25 +36,28 @@ export default function App() {
             fontWeight: '500',
           },
           success: {
-            iconTheme: {
-              primary: '#4ade80',
-              secondary: '#2c1a15',
-            },
+            iconTheme: { primary: '#4ade80', secondary: '#2c1a15' },
           },
         }}
       />
       <Routes>
+        {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        
-        {/* Protected Routes */}
+
+        {/* Protected routes — requires login */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<DonorDashboard />} />
-          <Route path="/feed" element={<ReceiverFeed />} />
-          <Route path="/logistics" element={<VolunteerLogistics />} />
-          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/dashboard"  element={<DonorDashboard />} />
+          <Route path="/feed"       element={<ReceiverFeed />} />
+          <Route path="/logistics"  element={<VolunteerLogistics />} />
+          <Route path="/admin"      element={<AdminPanel />} />
+          <Route path="/community"  element={<CommunityPage />} />
+          <Route path="/profile"    element={<ProfilePage />} />
         </Route>
+
+        {/* 404 catch-all */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   )

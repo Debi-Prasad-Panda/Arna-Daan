@@ -2,7 +2,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', href: '/volunteer-dashboard' },
   { label: 'Logistics', href: '/logistics' },
   { label: 'Community', href: '/community' },
   { label: 'Profile', href: '/profile' },

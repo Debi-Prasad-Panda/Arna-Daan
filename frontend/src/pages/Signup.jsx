@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, Navigate } from 'react-router-dom'
-import useAuthStore from '../store/authStore'
+import useAuthStore, { getHomeRoute } from '../store/authStore'
 
 const ROLES = [
   { id: 'donor', label: 'Donor', icon: 'restaurant', desc: 'I want to donate food' },
@@ -28,18 +28,17 @@ export default function Signup() {
     }
     setError('')
     try {
-      await register(email, password, name)
-      if (selectedRole === 'donor') navigate('/dashboard')
-      else if (selectedRole === 'ngo') navigate('/feed')
-      else navigate('/logistics')
+      // Pass selected role — it gets saved to Appwrite prefs
+      await register(email, password, name, selectedRole)
+      navigate(getHomeRoute(selectedRole))
     } catch (err) {
       setError(err.message || 'Registration failed.')
     }
   }
 
-  // Redirect if already logged in
+  // Redirect if already logged in — send to their correct home
   if (user && !isLoading) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={getHomeRoute(user.prefs?.role)} replace />
   }
 
   return (

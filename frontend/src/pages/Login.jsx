@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate, Navigate } from 'react-router-dom'
-import useAuthStore from '../store/authStore'
+import useAuthStore, { getHomeRoute } from '../store/authStore'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -21,15 +21,17 @@ export default function Login() {
     setError('')
     try {
       await login(email, password)
-      navigate('/dashboard') // Route based on user type later
+      // Navigate based on the role that was saved at signup
+      const role = useAuthStore.getState().role
+      navigate(getHomeRoute(role))
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.')
     }
   }
 
-  // Redirect if already logged in
+  // Redirect if already logged in — go to their home page by role
   if (user && !isLoading) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={getHomeRoute(user.prefs?.role)} replace />
   }
 
   return (

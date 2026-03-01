@@ -1,164 +1,200 @@
-const CARDS = [
+import { useEffect } from 'react'
+import useListingStore from '../store/listingStore'
+import useRequestStore from '../store/requestStore'
+
+// ── Fallback demo cards shown when no real Appwrite listings exist ──
+const MOCK_CARDS = [
   {
     id: 1,
     title: '50 Vegetarian Meals',
-    donor: 'Green Leaf Bistro',
-    distance: '2.5 km',
+    donorName: 'Green Leaf Bistro',
+    category: 'Ready to eat',
+    quantity: 50,
+    diet: 'Veg',
+    bestBefore: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+    status: 'Active',
     img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAxIT36yDx143kNTXmSITHBt-ZqHSHEVOI_MZ1h9RDpm15y6rlHeReuvoulJeYFAkRsBv-vrzom66foOtb96HpCRldwXGsC9C3d23QR5mg0aFxJK1CpZ5kL_6C_-io7KVZN0f-PKfmgPmlibdMGGU9G-a1NIhSO3shumEYNE2bviyiHr3fKI_iXPY-iKec1HpSknXmCMwcWEsThZ-4nvgzjL7BDAWrsY8_JQz1xHQcCefKYEqbozg17GdR6togmTVcoWnCKADe9pA',
-    urgent: true,
-    urgentLabel: 'Expiring Soon',
-    urgentIcon: 'timer',
-    typeIcon: 'restaurant',
-    typeLabel: 'Ready to eat',
-    timeLabel: '< 2 hours',
+    _isMock: true,
   },
   {
     id: 2,
     title: 'Assorted Raw Veggies',
-    donor: 'City Market Co-op',
-    distance: '4.2 km',
+    donorName: 'City Market Co-op',
+    category: 'Raw Ingredients',
+    quantity: 30,
+    diet: 'Veg',
+    bestBefore: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    status: 'Active',
     img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAadeTglXWoMQx-S2wpVMzZxIso5HQQnPTa7hecrdsCbpv7zsYCBIRB1sInaKZ1WsJlppi-CInNExl4LDMDgIMv2obMWbJKUBeRfSIGC29GUcG8uQ3_jpmOMam6wKJFv3bAyzToELj4hnwgnbMWJga-QgEKiS33JFo-pcyrbTlI_Xe4vQSDKgCV_9z-p8SNf5EUAKBR-mSG_lnu31L2bNi3zHmEeGZFTYwvbxSR1r5xSIhIKpTDyEgT6cTVZL4fMR_bfb2fY7VEOg',
-    urgent: false,
-    typeIcon: 'grocery',
-    typeLabel: 'Raw Ingredients',
-    timeLabel: '24 hours',
+    _isMock: true,
   },
   {
     id: 3,
     title: '20 Frozen Pizzas',
-    donor: 'Dominos Downtown',
-    distance: '1.8 km',
+    donorName: 'Dominos Downtown',
+    category: 'Frozen',
+    quantity: 20,
+    diet: 'Non-Veg',
+    bestBefore: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+    status: 'Active',
     img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDGDaT_JjepvGoVLxW0CnyzykaEe4reQ2axAa5WbAcCpBaCe6d5mk8-Ms_s_VUjh-i1o7lf98gsL1zn0iNifJj_4_QDHaoD1KgoTCrssh6S97N8TNR3iAH06gQ1pdk42zVafGfe0XSB7ipXBwq-oJnTr7fi1nyRYS1PRi8Tu7Q5PhiujfDpeY2VRyvU1yvkt5eFT-vxFNLFod1Q_nvk6NeCl252ErgOaOQ1YZNWh4uwqzEi1UYkb7nn6fX-GhQSuSGdfmwT0WfulA',
-    urgent: false,
-    badgeBg: 'bg-blue-500/90',
-    badgeLabel: 'Frozen',
-    badgeIcon: 'severe_cold',
-    typeIcon: 'ac_unit',
-    typeLabel: 'Frozen',
-    timeLabel: '48 hours',
+    _isMock: true,
   },
   {
     id: 4,
     title: 'Surplus Bread Loaves',
-    donor: "Baker's Dozen",
-    distance: '5.0 km',
+    donorName: "Baker's Dozen",
+    category: 'Baked Goods',
+    quantity: 40,
+    diet: 'Veg',
+    bestBefore: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
+    status: 'Active',
     img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuABqOUB349kfkdi1amD3D63mFuoeJRAhV4M7YJwX2Z7QGlm6B-PffpLbEiqqR4qd1hKUxmHm4S2Oyj4gyxgnrES8sRTiEX13yuFm4rfWRJ7F_j-da2blvkvecsV5attnmYhhkfHbuHvGnvp8XvTLXQHcYh_QGLRVWBtbN6h1bgOlAiOWOHbe4uR6s7wv7Pj83Yy_NKXqHQnsdl2Z74V8c6162-AALoDdnEaAesk07N1hoK3usN_O5RqqNgYqlAuMJUFkZSKgEnTMg',
-    urgent: false,
-    typeIcon: 'bakery_dining',
-    typeLabel: 'Baked Goods',
-    timeLabel: '12 hours',
+    _isMock: true,
   },
   {
     id: 5,
     title: '100 Pasta Portions',
-    donor: 'Italian Feast Events',
-    distance: '0.8 km',
+    donorName: 'Italian Feast Events',
+    category: 'Ready to eat',
+    quantity: 100,
+    diet: 'Veg',
+    bestBefore: new Date(Date.now() + 1 * 60 * 60 * 1000).toISOString(),
+    status: 'Active',
     img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDWxrx_NiY4XZ--fGgRh5MiO2i_Vq-QtlCKYaiU33Kk-LxTIZtqsOarLzDjPQtA3xzX8-KvfGJ2zucCbtEXfeSL9ni3IJ8yCWIiVp_-xdgo-wdPerjdsg44H9G3a4mEIGJ1VrHxMnOfEMjhF5HIrHs-7maWtz4nHbc6g3dyqCt0ZqYNtyfxQ4p6xY7CnJfqy9zAP2BTjo2U4g5HB-ANsAQ6et-he-72ZN_rc242SBI7B70ObsyQ2tm86NF9BS3hL2vZeVeIQ2p_8A',
-    urgent: true,
-    urgentLabel: 'Urgent Pickup',
-    urgentIcon: 'timer',
-    typeIcon: 'restaurant_menu',
-    typeLabel: 'Bulk Meal',
-    timeLabel: '< 1 hour',
+    _isMock: true,
   },
   {
     id: 6,
     title: 'Fresh Seasonal Fruit',
-    donor: 'Whole Foods Local',
-    distance: '6.5 km',
+    donorName: 'Whole Foods Local',
+    category: 'Raw Ingredients',
+    quantity: 80,
+    diet: 'Veg',
+    bestBefore: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
+    status: 'Active',
     img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAqkClQ7sn0QeM834bquPPoRC5nQHQ27ovwr18mVS2biJsaL4AiTUaZIA5OAPYJKRwK64iBEnNxSZRYRKmvy17O2i-EfxwoNFdAGhr8Gmxo3Ara7gAj5494ntcUI1TP2qouMgtrpFGnm6W6kWmE_sbALDJKuCnjObpUeWcSQjMBs7iPh0-ju6KKhST5sQGi2IyoPnVLvjyLd3U47U8jO-jR6pKVmUuIewdbVCgy9If4qAKE7YiHFF5MQNguC245wwZkzLasISiecw',
-    urgent: false,
-    typeIcon: 'nutrition',
-    typeLabel: 'Fresh Produce',
-    timeLabel: '3 days',
+    _isMock: true,
   },
 ]
 
-import useRequestStore from '../store/requestStore'
+function getTimeLabel(bestBefore) {
+  if (!bestBefore) return 'Unknown'
+  const ms = new Date(bestBefore) - Date.now()
+  if (ms < 0) return 'Expired'
+  const h = Math.floor(ms / 3600000)
+  if (h < 1) return '< 1 hour'
+  if (h < 24) return `${h} hours`
+  return `${Math.floor(h / 24)} days`
+}
 
-function FeedCard({ card }) {
-  const createRequest = useRequestStore(state => state.createRequest)
+function isUrgent(bestBefore) {
+  if (!bestBefore) return false
+  const h = (new Date(bestBefore) - Date.now()) / 3600000
+  return h < 4
+}
+
+const CATEGORY_ICON = {
+  'Ready to eat': 'restaurant',
+  'Raw Ingredients': 'grocery',
+  'Frozen': 'ac_unit',
+  'Baked Goods': 'bakery_dining',
+  'Canned': 'inventory_2',
+}
+
+const FOOD_IMAGES = [
+  'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&auto=format&fit=crop',
+]
+
+function FeedCard({ card, index = 0 }) {
+  const timeLabel = getTimeLabel(card.bestBefore)
+  const urgent = isUrgent(card.bestBefore)
+  const catIcon = CATEGORY_ICON[card.category] || 'restaurant'
+  const imgSrc = card.img || FOOD_IMAGES[index % FOOD_IMAGES.length]
+  const cardId = card.$id || card.id
 
   return (
-    <div className="group bg-[#2c1a15] rounded-xl overflow-hidden border border-[#3a2c27] hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
-      {/* Image Header */}
-      <div className="relative h-48 w-full overflow-hidden bg-[#3a2c27]">
-        {/* Urgent or Custom Tag */}
-        {(card.urgent || card.badgeLabel) && (
-          <div className="absolute top-3 left-3 z-10">
-            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-white text-xs font-bold backdrop-blur-sm shadow-sm ${card.urgent ? 'bg-red-500/90' : card.badgeBg}`}>
-              <span className="material-symbols-outlined text-[14px]">
-                {card.urgent ? card.urgentIcon : card.badgeIcon}
-              </span>
-              {card.urgent ? card.urgentLabel : card.badgeLabel}
-            </span>
+    <div className="group flex flex-col bg-[#23140f] border border-[#3a2c27] rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 cursor-pointer">
+      {/* Image area */}
+      <div className="relative h-48 overflow-hidden">
+        {urgent && (
+          <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-primary/90 text-white text-xs font-bold px-2.5 py-1 rounded-full backdrop-blur-sm">
+            <span className="material-symbols-outlined text-[14px]">timer</span>
+            Expiring Soon
           </div>
         )}
-        
-        {/* Favorite */}
-        <div className="absolute top-3 right-3 z-10">
-          <button 
-            onClick={() => {
-              import('react-hot-toast').then(({ default: toast }) => {
-                toast.success('Added to your favorites!');
-              });
-            }}
-            className="p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors"
-          >
-            <span className="material-symbols-outlined text-[18px]">favorite</span>
-          </button>
-        </div>
-
-        {/* Image */}
-        <div 
-          className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" 
-          style={{ backgroundImage: `url('${card.img}')` }}
+        {card._isMock && (
+          <div className="absolute top-3 right-12 z-10 bg-[#281e1b]/90 text-[#bca39a] text-[10px] font-bold px-2 py-0.5 rounded-full">
+            DEMO
+          </div>
+        )}
+        <button
+          onClick={() => import('react-hot-toast').then(({ default: toast }) => toast.success('Added to favorites!'))}
+          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors"
+        >
+          <span className="material-symbols-outlined text-[18px]">favorite</span>
+        </button>
+        <div
+          className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+          style={{ backgroundImage: `url('${imgSrc}')` }}
         />
       </div>
 
-      {/* Card Body */}
+      {/* Card body */}
       <div className="p-5 flex flex-col flex-1">
         <div className="flex justify-between items-start mb-2">
           <div>
-            <h3 className="text-lg font-bold text-white leading-tight group-hover:text-primary transition-colors">{card.title}</h3>
-            <p className="text-sm text-[#bca39a] mt-1">{card.donor}</p>
+            <h3 className="text-lg font-bold text-white leading-tight group-hover:text-primary transition-colors">
+              {card.title}
+            </h3>
+            <p className="text-sm text-[#bca39a] mt-1">{card.donorName || 'Anonymous Donor'}</p>
           </div>
-          <div className="flex items-center justify-center bg-[#3a2c27] rounded-lg px-2 py-1">
-            <span className="text-xs font-bold text-white">{card.distance}</span>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-4 my-3 text-sm text-[#bca39a]">
-          <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[18px] text-primary">{card.typeIcon}</span>
-            <span>{card.typeLabel}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className={`material-symbols-outlined text-[18px] ${card.urgent ? 'text-primary' : 'text-slate-400'}`}>schedule</span>
-            <span className={card.urgent ? 'text-primary' : ''}>{card.timeLabel}</span>
-          </div>
+          {card.quantity && (
+            <div className="flex items-center justify-center bg-[#3a2c27] rounded-lg px-2 py-1">
+              <span className="text-xs font-bold text-white">{card.quantity} pcs</span>
+            </div>
+          )}
         </div>
 
-        {/* Action Button */}
-        <div className="mt-auto pt-4 border-t border-[#3a2c27] flex gap-3">
-          <button 
+        <div className="flex flex-wrap items-center gap-3 my-3 text-sm text-[#bca39a]">
+          <div className="flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[18px] text-primary">{catIcon}</span>
+            <span>{card.category || 'Food'}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className={`material-symbols-outlined text-[18px] ${urgent ? 'text-primary' : 'text-slate-400'}`}>schedule</span>
+            <span className={urgent ? 'text-primary font-semibold' : ''}>{timeLabel}</span>
+          </div>
+          {card.diet && (
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+              card.diet === 'Veg' ? 'bg-green-500/15 text-green-400' : 'bg-orange-500/15 text-orange-400'
+            }`}>
+              {card.diet}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-auto pt-4 border-t border-[#3a2c27]">
+          <button
             onClick={async () => {
-              const { default: toast } = await import('react-hot-toast');
-              
-              if (typeof card.id === 'number') {
-                toast.success('Food claim requested! (Simulated for this dummy listing)');
-                return;
+              const { default: toast } = await import('react-hot-toast')
+              if (card._isMock) {
+                toast.success('Demo card — real claims work with live Appwrite listings!')
+                return
               }
-
-              const toastId = toast.loading('Sending request...');
+              const toastId = toast.loading('Sending request…')
               try {
-                await createRequest(card.id);
-                toast.success('Food claim requested! The donor will be notified.', { id: toastId });
-              } catch(e) {
-                toast.error(e.message || 'Failed to claim food', { id: toastId });
+                const store = useRequestStore.getState()
+                await store.createRequest(cardId)
+                toast.success('Food claim sent! The donor will be notified.', { id: toastId })
+              } catch (e) {
+                toast.error(e.message || 'Failed to claim food', { id: toastId })
               }
             }}
-            className="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+            className="w-full bg-primary hover:bg-orange-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2"
           >
             <span>Claim Now</span>
             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -170,27 +206,53 @@ function FeedCard({ card }) {
 }
 
 export default function FeedGrid() {
+  const { listings, isLoading, fetchListings } = useListingStore()
+
+  useEffect(() => {
+    fetchListings()
+  }, [])
+
+  // Use real Appwrite data if available, otherwise show demo cards
+  const displayCards = listings.length > 0 ? listings : MOCK_CARDS
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-        {CARDS.map(c => <FeedCard key={c.id} card={c} />)}
-      </div>
-      
-      {/* Load More */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-[#23140f] border border-[#3a2c27] rounded-2xl overflow-hidden animate-pulse">
+              <div className="h-48 bg-[#3a2c27]" />
+              <div className="p-5 flex flex-col gap-3">
+                <div className="h-5 bg-[#3a2c27] rounded w-3/4" />
+                <div className="h-4 bg-[#3a2c27] rounded w-1/2" />
+                <div className="h-10 bg-[#3a2c27] rounded mt-4" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          {listings.length === 0 && (
+            <div className="flex items-center gap-3 py-3 px-5 bg-[#3a2c27]/30 border border-dashed border-[#3a2c27] rounded-xl mb-6 text-[#bca39a] text-sm">
+              <span className="material-symbols-outlined text-xl text-primary">info</span>
+              No live listings yet — showing demo cards. Real donations will appear here once donors post them.
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {displayCards.map((c, i) => (
+              <FeedCard key={c.$id || c.id} card={c} index={i} />
+            ))}
+          </div>
+        </>
+      )}
+
       <div className="mt-12 mb-8 flex justify-center">
-        <button 
-          onClick={() => {
-            import('react-hot-toast').then(({ default: toast }) => {
-              const id = toast.loading('Finding more donations...');
-              setTimeout(() => {
-                toast.success('Loaded 6 new donations near you', { id });
-              }, 1500);
-            });
-          }}
+        <button
+          onClick={() => fetchListings()}
           className="flex items-center gap-2 px-6 py-3 rounded-xl border border-[#3a2c27] bg-[#2c1a15] text-[#bca39a] hover:text-white hover:border-primary/50 transition-colors font-semibold"
         >
-          <span>Load more donations</span>
-          <span className="material-symbols-outlined text-[20px]">expand_more</span>
+          <span>Refresh donations</span>
+          <span className="material-symbols-outlined text-[20px]">refresh</span>
         </button>
       </div>
     </>

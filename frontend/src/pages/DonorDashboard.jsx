@@ -1,6 +1,7 @@
 import DashboardTopNav from '../components/DashboardTopNav'
 import CreateListingForm from '../components/CreateListingForm'
 import ActiveListings from '../components/ActiveListings'
+import useAuthStore from '../store/authStore'
 
 const STATS = [
   {
@@ -54,6 +55,7 @@ function StatCard({ stat }) {
 }
 
 export default function DonorDashboard() {
+  const user = useAuthStore(state => state.user)
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#181210', color: '#ffffff' }}>
       <DashboardTopNav />
@@ -63,7 +65,7 @@ export default function DonorDashboard() {
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-4 flex flex-col justify-center gap-2">
             <h1 className="text-3xl md:text-4xl font-black tracking-tight leading-tight text-white">
-              Welcome back, <span className="text-primary">Rahul</span>
+              Welcome back, <span className="text-primary">{user?.name?.split(' ')[0] || 'there'}</span>
             </h1>
             <p className="text-[#bca39a]">Your contributions are changing lives daily. Track your surplus and impact here.</p>
           </div>

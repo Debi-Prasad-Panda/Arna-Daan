@@ -4,9 +4,8 @@ import useAuthStore from '../store/authStore'
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: 'dashboard' },
-  { label: 'My Listings', href: '/listings', icon: 'list_alt' },
-  { label: 'History', href: '/history', icon: 'history' },
-  { label: 'Impact', href: '/impact', icon: 'trending_up' },
+  { label: 'Feed', href: '/feed', icon: 'list_alt' },
+  { label: 'Volunteer', href: '/logistics', icon: 'local_shipping' },
 ]
 
 export default function DashboardTopNav() {
@@ -49,13 +48,13 @@ export default function DashboardTopNav() {
 
       {/* Actions */}
       <div className="flex items-center gap-4">
-        <Link
-          to="/listings/new"
+        <button
+          onClick={() => document.getElementById('create-listing-form')?.scrollIntoView({ behavior: 'smooth' })}
           className="hidden md:flex items-center justify-center h-10 px-5 rounded-xl bg-primary hover:bg-orange-700 text-white text-sm font-bold transition-all shadow-lg shadow-primary/20"
         >
           <span className="mr-2 material-symbols-outlined text-[18px]">add_circle</span>
           New Donation
-        </Link>
+        </button>
         
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex flex-col items-end mr-2">
