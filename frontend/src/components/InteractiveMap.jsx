@@ -324,6 +324,8 @@ export default function InteractiveMap() {
               </Popup>
             </Marker>
           )}
+
+          <MapResizer />
         </MapContainer>
       </div>
 
