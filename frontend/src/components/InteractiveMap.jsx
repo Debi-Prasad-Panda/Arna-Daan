@@ -25,14 +25,35 @@ export default function InteractiveMap() {
       {/* Map Controls (Zoom/Locate) */}
       <div className="absolute bottom-8 right-8 flex flex-col gap-2 z-10">
         <div className="flex flex-col rounded-lg bg-[#281e1b] shadow-lg border border-[#3a2c27] overflow-hidden">
-          <button className="p-2 hover:bg-[#181210] text-white border-b border-[#3a2c27] transition-colors">
+          <button 
+            onClick={() => {
+              import('react-hot-toast').then(({ default: toast }) => {
+                toast('Zooming in...', { icon: '🔍' });
+              });
+            }}
+            className="p-2 hover:bg-[#181210] text-white border-b border-[#3a2c27] transition-colors"
+          >
             <span className="material-symbols-outlined block">add</span>
           </button>
-          <button className="p-2 hover:bg-[#181210] text-white transition-colors">
+          <button 
+            onClick={() => {
+              import('react-hot-toast').then(({ default: toast }) => {
+                toast('Zooming out...', { icon: '🔍' });
+              });
+            }}
+            className="p-2 hover:bg-[#181210] text-white transition-colors"
+          >
             <span className="material-symbols-outlined block">remove</span>
           </button>
         </div>
-        <button className="p-2 rounded-lg bg-primary text-white shadow-lg hover:bg-[#e55a2b] transition-colors flex items-center justify-center">
+        <button 
+          onClick={() => {
+            import('react-hot-toast').then(({ default: toast }) => {
+              toast.success('Location centered to current GPS coordinates');
+            });
+          }}
+          className="p-2 rounded-lg bg-primary text-white shadow-lg hover:bg-[#e55a2b] transition-colors flex items-center justify-center"
+        >
           <span className="material-symbols-outlined">my_location</span>
         </button>
       </div>

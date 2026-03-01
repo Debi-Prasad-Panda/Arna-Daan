@@ -23,9 +23,8 @@ export default function ReceiverFeed() {
               Browse real-time food donations near your registered location. Claim quickly to secure meals for your beneficiaries.
             </p>
           </div>
-
-          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-            {/* Urgent Toggle */}
+          {/* Urgent Toggle */}
+          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto mb-8">
             <label className="flex items-center gap-3 cursor-pointer group bg-[#2c1a15] border border-[#3a2c27] rounded-xl px-4 py-2.5 hover:border-primary/50 transition-all select-none shadow-sm">
               <div className="relative flex items-center">
                 <input type="checkbox" className="peer sr-only" />
@@ -36,16 +35,6 @@ export default function ReceiverFeed() {
                 <span className="text-sm font-bold text-white">High Need Only</span>
               </div>
             </label>
-
-            {/* View Toggle */}
-            <div className="bg-[#2c1a15] border border-[#3a2c27] rounded-xl p-1 flex items-center shadow-sm">
-              <button className="p-2 rounded-lg bg-[#3a2c27] text-white shadow-sm">
-                <span className="material-symbols-outlined text-[20px]">view_list</span>
-              </button>
-              <button className="p-2 rounded-lg text-[#bca39a] hover:bg-[#3a2c27]/50 transition-colors">
-                <span className="material-symbols-outlined text-[20px]">map</span>
-              </button>
-            </div>
           </div>
         </div>
 

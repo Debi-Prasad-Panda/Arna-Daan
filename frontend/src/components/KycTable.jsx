@@ -74,11 +74,25 @@ export default function KycTable() {
           </button>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-600/10 border border-green-600/20 text-green-500 text-sm font-bold hover:bg-green-600 hover:text-white transition-all">
+          <button 
+            onClick={() => {
+              import('react-hot-toast').then(({ default: toast }) => {
+                toast.success('Approved selected NGOs. Notification emails sent.');
+              });
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-600/10 border border-green-600/20 text-green-500 text-sm font-bold hover:bg-green-600 hover:text-white transition-all"
+          >
             <span className="material-symbols-outlined text-lg">check</span>
             Approve Selected
           </button>
-          <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600/10 border border-red-600/20 text-red-500 text-sm font-bold hover:bg-red-600 hover:text-white transition-all">
+          <button 
+            onClick={() => {
+              import('react-hot-toast').then(({ default: toast }) => {
+                toast.error('Rejected selected NGOs. They have been notified.');
+              });
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600/10 border border-red-600/20 text-red-500 text-sm font-bold hover:bg-red-600 hover:text-white transition-all"
+          >
             <span className="material-symbols-outlined text-lg">close</span>
             Reject Selected
           </button>

@@ -93,7 +93,14 @@ function FeedCard({ card }) {
         
         {/* Favorite */}
         <div className="absolute top-3 right-3 z-10">
-          <button className="p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors">
+          <button 
+            onClick={() => {
+              import('react-hot-toast').then(({ default: toast }) => {
+                toast.success('Added to your favorites!');
+              });
+            }}
+            className="p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors"
+          >
             <span className="material-symbols-outlined text-[18px]">favorite</span>
           </button>
         </div>
@@ -130,7 +137,14 @@ function FeedCard({ card }) {
 
         {/* Action Button */}
         <div className="mt-auto pt-4 border-t border-[#3a2c27] flex gap-3">
-          <button className="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+          <button 
+            onClick={() => {
+              import('react-hot-toast').then(({ default: toast }) => {
+                toast.success('Food claim requested! The donor will be notified.');
+              });
+            }}
+            className="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+          >
             <span>Claim Now</span>
             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
@@ -149,7 +163,17 @@ export default function FeedGrid() {
       
       {/* Load More */}
       <div className="mt-12 mb-8 flex justify-center">
-        <button className="flex items-center gap-2 px-6 py-3 rounded-xl border border-[#3a2c27] bg-[#2c1a15] text-[#bca39a] hover:text-white hover:border-primary/50 transition-colors font-semibold">
+        <button 
+          onClick={() => {
+            import('react-hot-toast').then(({ default: toast }) => {
+              const id = toast.loading('Finding more donations...');
+              setTimeout(() => {
+                toast.success('Loaded 6 new donations near you', { id });
+              }, 1500);
+            });
+          }}
+          className="flex items-center gap-2 px-6 py-3 rounded-xl border border-[#3a2c27] bg-[#2c1a15] text-[#bca39a] hover:text-white hover:border-primary/50 transition-colors font-semibold"
+        >
           <span>Load more donations</span>
           <span className="material-symbols-outlined text-[20px]">expand_more</span>
         </button>

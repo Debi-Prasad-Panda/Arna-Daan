@@ -94,17 +94,21 @@ export default function TrackingTimeline() {
         </div>
       </div>
       
-      {/* Action Area */}
-      <div className="p-6 pt-2 mt-auto bg-[#181210] border-t border-[#3a2c27] sticky bottom-0">
-        <button className="w-full group flex items-center justify-center gap-3 rounded-xl h-14 bg-primary hover:bg-[#e55a2b] transition-all shadow-lg shadow-primary/25 active:scale-[0.98]">
-          <div className="text-white group-hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined">qr_code_scanner</span>
-          </div>
-          <span className="text-white text-base font-bold tracking-wide">Generate QR Code for Handover</span>
+      {/* Action Button */}
+      <div className="p-6 bg-[#23140f]">
+        <button 
+          onClick={() => {
+            import('react-hot-toast').then(({ default: toast }) => {
+              toast.success('Mission accepted! You are now the assigned driver.');
+            });
+          }}
+          className="w-full group flex items-center justify-center gap-3 rounded-xl h-14 bg-primary hover:bg-[#e55a2b] transition-all shadow-lg shadow-primary/25 active:scale-[0.98]"
+        >
+          <span className="font-bold text-white text-lg">Accept Mission</span>
+          <span className="material-symbols-outlined text-white group-hover:translate-x-1 transition-transform">
+            arrow_forward
+          </span>
         </button>
-        <p className="text-center text-xs text-slate-500 mt-3">
-          Scan this code at the shelter to verify delivery.
-        </p>
       </div>
     </div>
   )

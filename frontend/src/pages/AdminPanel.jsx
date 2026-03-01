@@ -18,7 +18,14 @@ export default function AdminPanel() {
           </div>
           
           <div className="flex items-center gap-4">
-            <button className="p-2 text-[#d6c1ba] hover:text-primary transition-colors relative">
+            <button 
+              onClick={() => {
+                import('react-hot-toast').then(({ default: toast }) => {
+                  toast('No new notifications', { icon: '🔔' });
+                });
+              }}
+              className="p-2 text-[#d6c1ba] hover:text-primary transition-colors relative"
+            >
               <span className="material-symbols-outlined">notifications</span>
               <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full animate-pulse" />
             </button>

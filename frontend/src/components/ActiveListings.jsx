@@ -76,10 +76,24 @@ function ListingCard({ listing }) {
         </div>
         
         <div className="mt-3 flex gap-2">
-          <button className="flex-1 bg-[#3a2c27] hover:bg-white hover:text-black text-white text-xs font-bold py-2 rounded-lg transition-colors">
+          <button 
+            onClick={() => {
+              import('react-hot-toast').then(({ default: toast }) => {
+                toast(isClosed ? 'Opening listing details...' : 'Opening editor...', { icon: isClosed ? '📋' : '✏️' });
+              });
+            }}
+            className="flex-1 bg-[#3a2c27] hover:bg-white hover:text-black text-white text-xs font-bold py-2 rounded-lg transition-colors"
+          >
             {isClosed ? 'Details' : 'Edit'}
           </button>
-          <button className={`flex-1 text-xs font-bold py-2 rounded-lg border ${statusColor}`}>
+          <button 
+            onClick={() => {
+              import('react-hot-toast').then(({ default: toast }) => {
+                toast(`Current status: ${listing.status || 'Active'}`);
+              });
+            }}
+            className={`flex-1 text-xs font-bold py-2 rounded-lg border ${statusColor}`}
+          >
             {listing.status || 'Active'}
           </button>
         </div>

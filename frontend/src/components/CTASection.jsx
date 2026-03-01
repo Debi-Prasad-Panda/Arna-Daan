@@ -17,7 +17,14 @@ export default function CTASection() {
           >
             Join as a Partner
           </Link>
-          <button className="w-full sm:w-auto glass-button flex h-14 items-center justify-center gap-2 rounded-xl px-8 text-base font-bold text-white">
+          <button 
+            onClick={() => {
+              import('react-hot-toast').then(({ default: toast }) => {
+                toast('Mobile app is currently in development. Stay tuned!', { icon: '📱' });
+              });
+            }}
+            className="w-full sm:w-auto glass-button flex h-14 items-center justify-center gap-2 rounded-xl px-8 text-base font-bold text-white"
+          >
             Download App
           </button>
         </div>

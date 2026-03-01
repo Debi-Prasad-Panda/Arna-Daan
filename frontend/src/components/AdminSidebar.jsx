@@ -4,9 +4,9 @@ import useAuthStore from '../store/authStore'
 const NAV_ITEMS = [
   { label: 'Dashboard', icon: 'dashboard', href: '/admin-dashboard' },
   { label: 'KYC Verification', icon: 'verified_user', href: '/admin', active: true },
-  { label: 'Users Management', icon: 'group', href: '/admin/users' },
-  { label: 'Analytics', icon: 'bar_chart', href: '/admin/analytics' },
-  { label: 'Settings', icon: 'settings', href: '/admin/settings' },
+  { label: 'Users Management', icon: 'group', href: '#' },
+  { label: 'Analytics', icon: 'bar_chart', href: '#' },
+  { label: 'Settings', icon: 'settings', href: '#' },
 ]
 
 export default function AdminSidebar() {
@@ -46,6 +46,12 @@ export default function AdminSidebar() {
               <Link
                 key={item.label}
                 to={item.href}
+                onClick={item.href === '#' ? (e) => {
+                  e.preventDefault();
+                  import('react-hot-toast').then(({ default: toast }) => {
+                    toast(`${item.label} module coming soon!`, { icon: '🚧' });
+                  });
+                } : undefined}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors group ${
                   isActive
                     ? 'bg-primary/20 text-primary border border-primary/30 shadow-sm shadow-primary/10 font-bold'

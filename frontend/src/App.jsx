@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import useAuthStore from './store/authStore'
 
 import LandingPage from './pages/LandingPage'
@@ -20,6 +21,25 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <Toaster 
+        position="bottom-center" 
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#2c1a15',
+            color: '#fff',
+            border: '1px solid #3a2c27',
+            fontSize: '14px',
+            fontWeight: '500',
+          },
+          success: {
+            iconTheme: {
+              primary: '#4ade80',
+              secondary: '#2c1a15',
+            },
+          },
+        }}
+      />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
