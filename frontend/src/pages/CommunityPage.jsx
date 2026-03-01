@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
 import { getHomeRoute } from '../store/authStore'
+import useListingStore from '../store/listingStore'
+import useDeliveryStore from '../store/deliveryStore'
+import useRequestStore from '../store/requestStore'
 
 // ── Shared nav sub-component based on role ──────────────────────────────────
 function CommunityNav() {
@@ -98,6 +101,21 @@ const ROLE_COLOR = {
 export default function CommunityPage() {
   const [activeTab, setActiveTab] = useState('leaderboard')
 
+  // Live Appwrite data for the stat strip
+  const { listings, fetchListings }     = useListingStore()
+  const { deliveries, fetchDeliveries } = useDeliveryStore()
+  const { requests, fetchRequests }     = useRequestStore()
+  useEffect(() => { fetchListings(); fetchDeliveries(); fetchRequests() }, [])
+
+  const totalMeals      = listings.reduce((s, l) => s + (Number(l.quantity) || 0), 0)
+  const peopleFed       = Math.round(totalMeals * 0.9)
+  const volunteersCount = new Set(deliveries.filter(d => d.volunteerId).map(d => d.volunteerId)).size
+  const co2Kg           = Math.round(totalMeals * 2.5)
+  const co2Display      = co2Kg >= 1000 ? `${(co2Kg / 1000).toFixed(1)}t` : `${co2Kg}kg`
+  const thisMonthMeals  = listings
+    .filter(l => { const d = new Date(l.$createdAt || 0); const n = new Date(); return d.getMonth() === n.getMonth() && d.getFullYear() === n.getFullYear() })
+    .reduce((s, l) => s + (Number(l.quantity) || 0), 0)
+
   return (
     <div className="min-h-screen flex flex-col bg-[#181210] font-display text-white">
       <CommunityNav />
@@ -112,7 +130,9 @@ export default function CommunityPage() {
           </div>
           <h1 className="text-4xl md:text-5xl font-black mb-4 leading-tight">
             Together We've Saved<br />
-            <span className="text-primary">1,240+ Meals</span> This Month
+            <span className="text-primary">
+              {thisMonthMeals > 0 ? `${thisMonthMeals.toLocaleString('en-IN')} Meals` : '1,240+ Meals'}
+            </span> This Month
           </h1>
           <p className="text-[#bca39a] text-lg max-w-2xl mx-auto">
             Every donor, volunteer, and NGO is part of this movement. Celebrate impact, discover stories, and climb the leaderboard.
@@ -122,10 +142,10 @@ export default function CommunityPage() {
         {/* Global stats strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           {[
-            { icon: 'restaurant', val: '12,480', label: 'Meals Rescued', color: 'text-primary' },
-            { icon: 'groups', val: '8,340', label: 'People Fed', color: 'text-blue-400' },
-            { icon: 'local_shipping', val: '234', label: 'Active Volunteers', color: 'text-green-400' },
-            { icon: 'co2', val: '2.1t', label: 'CO₂ Prevented', color: 'text-emerald-400' },
+            { icon: 'restaurant', val: totalMeals > 0 ? totalMeals.toLocaleString('en-IN') : '—', label: 'Meals Rescued', color: 'text-primary' },
+            { icon: 'groups',     val: peopleFed  > 0 ? peopleFed.toLocaleString('en-IN')  : '—', label: 'People Fed',   color: 'text-blue-400' },
+            { icon: 'local_shipping', val: volunteersCount > 0 ? String(volunteersCount) : '—', label: 'Active Volunteers', color: 'text-green-400' },
+            { icon: 'co2',        val: co2Kg > 0  ? co2Display : '—', label: 'CO₂ Prevented', color: 'text-emerald-400' },
           ].map(s => (
             <div key={s.label} className="bg-[#23140f] border border-[#3a2c27] rounded-2xl p-5 flex flex-col items-center text-center hover:border-primary/30 transition-colors">
               <span className={`material-symbols-outlined text-3xl mb-2 ${s.color}`}>{s.icon}</span>

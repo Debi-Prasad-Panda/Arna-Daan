@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import useAuthStore, { getHomeRoute } from '../store/authStore'
+import useListingStore from '../store/listingStore'
+import useDeliveryStore from '../store/deliveryStore'
+import useRequestStore from '../store/requestStore'
+import { account } from '../lib/appwrite'
 import toast from 'react-hot-toast'
 
 function ProfileNav() {
@@ -30,15 +34,45 @@ function ProfileNav() {
 
 export default function ProfilePage() {
   const { user, role } = useAuthStore()
-  const [name, setName] = useState(user?.name || '')
-  const [saving, setSaving] = useState(false)
+  const [name, setName]         = useState(user?.name || '')
+  const [oldPwd, setOldPwd]     = useState('')
+  const [newPwd, setNewPwd]     = useState('')
+  const [saving, setSaving]     = useState(false)
+
+  const { listings, fetchListings }     = useListingStore()
+  const { deliveries, fetchDeliveries } = useDeliveryStore()
+  const { requests, fetchRequests }     = useRequestStore()
+
+  useEffect(() => { fetchListings(); fetchDeliveries(); fetchRequests() }, [])
+
+  // Real stats based on role
+  const myListings   = listings.filter(l => l.donorId === user?.$id)
+  const myDeliveries = deliveries.filter(d => d.volunteerId === user?.$id)
+  const myRequests   = requests.filter(r => r.receiverId === user?.$id)
+  const totalMeals   = myListings.reduce((s, l) => s + (Number(l.quantity) || 0), 0)
 
   const handleSave = async () => {
+    if (!name.trim()) { toast.error('Name cannot be empty'); return }
     setSaving(true)
-    // Simulate a save (Appwrite account.updateName() would go here)
-    await new Promise(r => setTimeout(r, 800))
-    toast.success('Profile updated! (Name update requires Appwrite account.updateName())')
-    setSaving(false)
+    try {
+      // Update display name in Appwrite
+      if (name !== user?.name) {
+        await account.updateName(name)
+      }
+      // Update password if provided
+      if (newPwd && oldPwd) {
+        await account.updatePassword(newPwd, oldPwd)
+        setOldPwd(''); setNewPwd('')
+        toast.success('Password updated!')
+      }
+      // Refresh user in auth store
+      await useAuthStore.getState().checkAuth()
+      toast.success('Profile saved!')
+    } catch (e) {
+      toast.error(e.message || 'Save failed')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const ROLE_META = {
@@ -74,19 +108,37 @@ export default function ProfilePage() {
         </div>
 
         {/* Stats grid */}
-        <div className="grid grid-cols-3 gap-4">
-          {[
-            { icon: 'restaurant',     label: 'Meals Contributed', val: '—', color: 'text-primary' },
-            { icon: 'local_shipping', label: 'Deliveries Done',   val: '—', color: 'text-green-400' },
-            { icon: 'groups',         label: 'People Helped',     val: '—', color: 'text-blue-400' },
-          ].map(s => (
-            <div key={s.label} className="bg-[#23140f] border border-[#3a2c27] rounded-2xl p-4 flex flex-col items-center text-center hover:border-primary/30 transition-colors">
-              <span className={`material-symbols-outlined text-2xl mb-1 ${s.color}`}>{s.icon}</span>
-              <p className="text-xl font-black text-white">{s.val}</p>
-              <p className="text-[10px] text-[#bca39a] font-medium mt-0.5 leading-tight">{s.label}</p>
+        {(() => {
+          const profileStats = role === 'donor' ? [
+            { icon: 'restaurant',     label: 'Meals Donated',   val: totalMeals > 0 ? totalMeals.toLocaleString('en-IN') : '0', color: 'text-primary' },
+            { icon: 'inventory_2',    label: 'Listings Posted', val: myListings.length, color: 'text-orange-400' },
+            { icon: 'groups',         label: 'People Helped',   val: Math.round(totalMeals * 0.9), color: 'text-blue-400' },
+          ] : role === 'volunteer' ? [
+            { icon: 'local_shipping', label: 'Deliveries Done', val: myDeliveries.filter(d => d.status === 'Delivered').length, color: 'text-green-400' },
+            { icon: 'radio_button_checked', label: 'Active Missions', val: myDeliveries.filter(d => d.status !== 'Delivered').length, color: 'text-primary' },
+            { icon: 'groups',         label: 'Meals Delivered', val: myDeliveries.reduce((s, d) => s + (Number(d.quantity) || 0), 0), color: 'text-blue-400' },
+          ] : role === 'ngo' ? [
+            { icon: 'receipt_long',   label: 'Claims Made',  val: myRequests.length, color: 'text-blue-400' },
+            { icon: 'check_circle',   label: 'Delivered',    val: myRequests.filter(r => r.status === 'Delivered').length, color: 'text-green-400' },
+            { icon: 'hourglass_empty', label: 'Pending',     val: myRequests.filter(r => r.status === 'Pending').length, color: 'text-yellow-400' },
+          ] : [
+            { icon: 'restaurant',     label: 'Meals Rescued', val: listings.reduce((s, l) => s + (Number(l.quantity) || 0), 0).toLocaleString('en-IN'), color: 'text-primary' },
+            { icon: 'local_shipping', label: 'Deliveries',   val: deliveries.length, color: 'text-green-400' },
+            { icon: 'groups',         label: 'Users Managed', val: '—', color: 'text-blue-400' },
+          ]
+          return (
+            <div className="grid grid-cols-3 gap-4">
+              {profileStats.map(s => (
+                <div key={s.label} className="bg-[#23140f] border border-[#3a2c27] rounded-2xl p-4 flex flex-col items-center text-center hover:border-primary/30 transition-colors">
+                  <span className={`material-symbols-outlined text-2xl mb-1 ${s.color}`}>{s.icon}</span>
+                  <p className="text-xl font-black text-white">{s.val}</p>
+                  <p className="text-[10px] text-[#bca39a] font-medium mt-0.5 leading-tight">{s.label}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          )
+        })()}
+
 
         {/* Edit profile form */}
         <div className="bg-[#23140f] border border-[#3a2c27] rounded-3xl p-8 flex flex-col gap-6">
@@ -110,6 +162,25 @@ export default function ProfilePage() {
               className="w-full bg-[#181210] border-2 border-[#3a2c27] text-[#bca39a] rounded-xl px-4 py-3 outline-none cursor-not-allowed font-medium"
             />
             <p className="text-xs text-[#bca39a] mt-1">Email cannot be changed here.</p>
+          </div>
+
+          {/* Change password */}
+          <div className="border-t border-[#3a2c27] pt-5">
+            <p className="text-sm font-bold text-[#bca39a] mb-3">Change Password <span className="text-[#5a433a] font-normal">(optional)</span></p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs text-[#bca39a] mb-1.5">Current Password</label>
+                <input type="password" value={oldPwd} onChange={e => setOldPwd(e.target.value)}
+                  className="w-full bg-[#181210] border-2 border-[#3a2c27] focus:border-primary text-white rounded-xl px-4 py-3 outline-none transition-colors font-medium text-sm"
+                  placeholder="••••••••" />
+              </div>
+              <div>
+                <label className="block text-xs text-[#bca39a] mb-1.5">New Password</label>
+                <input type="password" value={newPwd} onChange={e => setNewPwd(e.target.value)}
+                  className="w-full bg-[#181210] border-2 border-[#3a2c27] focus:border-primary text-white rounded-xl px-4 py-3 outline-none transition-colors font-medium text-sm"
+                  placeholder="Min 8 characters" />
+              </div>
+            </div>
           </div>
 
           <div>
