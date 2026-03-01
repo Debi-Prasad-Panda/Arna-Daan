@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import DonorDashboard from './pages/DonorDashboard'
+import ReceiverFeed from './pages/ReceiverFeed'
 
 // Placeholder pages (to be built out)
 const ComingSoon = ({ title }) => (
@@ -19,6 +20,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<DonorDashboard />} />
+        <Route path="/feed" element={<ReceiverFeed />} />
         <Route path="/login" element={<ComingSoon title="Login" />} />
         <Route path="/signup" element={<ComingSoon title="Sign Up" />} />
         <Route path="/admin" element={<ComingSoon title="Admin Panel" />} />
