@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Annadaan - NGO Receiver Feed</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#ff6933",
+              "primary-dark": "#e65020",
+              "background-light": "#f8f6f5",
+              "background-dark": "#23140f",
+              "surface-dark": "#2c1a15",
+              "surface-light": "#ffffff",
+              "text-main": "#f2ebe9",
+              "text-muted": "#bca39a",
+            },
+            fontFamily: {
+              display: ["Manrope", "sans-serif"],
+            },
+            borderRadius: {
+              lg: "1rem",
+              xl: "1.5rem",
+            },
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col overflow-x-hidden text-slate-900 dark:text-text-main">
+<!-- Header / Navbar -->
+<header class="sticky top-0 z-50 w-full border-b border-[#3a2c27]/50 bg-background-light/95 dark:bg-[#181210]/95 backdrop-blur-md px-6 py-4 lg:px-12">
+<div class="mx-auto max-w-7xl flex items-center justify-between gap-6">
+<!-- Logo & Search -->
+<div class="flex items-center gap-8 flex-1">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]">volunteer_activism</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-extrabold tracking-tight">Annadaan</h2>
+</div>
+<div class="hidden md:flex w-full max-w-md items-center rounded-xl bg-white dark:bg-[#3a2c27] px-3 h-11 border border-transparent focus-within:border-primary/50 transition-colors">
+<span class="material-symbols-outlined text-slate-400 dark:text-[#bca39a]">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-[#bca39a] text-sm" placeholder="Search for donations, food type..." type="text"/>
+</div>
+</div>
+<!-- Navigation & Profile -->
+<div class="flex items-center gap-6">
+<nav class="hidden lg:flex items-center gap-6">
+<a class="text-slate-600 dark:text-[#bca39a] hover:text-primary dark:hover:text-white font-medium text-sm transition-colors" href="#">Dashboard</a>
+<a class="text-primary font-bold text-sm" href="#">Available Food</a>
+<a class="text-slate-600 dark:text-[#bca39a] hover:text-primary dark:hover:text-white font-medium text-sm transition-colors" href="#">My Claims</a>
+<a class="text-slate-600 dark:text-[#bca39a] hover:text-primary dark:hover:text-white font-medium text-sm transition-colors" href="#">Impact</a>
+</nav>
+<div class="h-6 w-px bg-slate-200 dark:bg-[#3a2c27] hidden lg:block"></div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-slate-100 dark:hover:bg-[#3a2c27] text-slate-600 dark:text-[#bca39a] transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-primary rounded-full"></span>
+</button>
+<div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-[#3a2c27] overflow-hidden border border-slate-100 dark:border-[#3a2c27] cursor-pointer" data-alt="User profile picture placeholder">
+<img alt="User Profile" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2t6tpUYRghIKDCEGXQ-xgMdFUS2UnYsbkoqpCU3fKntth2MunOJ8XXowBZNnfZ-awC6Q0-yFXfy1_ckr6qtlUwS_aJldlOG7kWuLCQoZY5ANErNV1FKkPf80WpT0ElmXWboyxQKlLHwCeag94mIo89A5qHB57WjSsabuGztLNIdheCJkK8s48Ef7OlbRVRqsS9ZEFTCn7vR9uwGuZNN2kv6fdwdorA5YMA7lq8ZvaD1RU5D_M2gkYi6qgfvjX8FRlPOvtTcJHvg"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-12 py-8">
+<!-- Page Title & Hero Actions -->
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-8">
+<div class="max-w-2xl">
+<div class="flex items-center gap-3 mb-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-primary">Live Feed</span>
+<span class="text-slate-500 dark:text-[#bca39a] text-sm">Last updated 2 mins ago</span>
+</div>
+<h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight mb-3">
+                    Available Surplus Food
+                </h1>
+<p class="text-slate-600 dark:text-[#bca39a] text-lg max-w-xl">
+                    Browse real-time food donations near your registered location. Claim quickly to secure meals for your beneficiaries.
+                </p>
+</div>
+<div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+<!-- Urgent Toggle -->
+<label class="flex items-center gap-3 cursor-pointer group bg-white dark:bg-[#2c1a15] border border-slate-200 dark:border-[#3a2c27] rounded-xl px-4 py-2.5 hover:border-primary/50 transition-all select-none shadow-sm">
+<div class="relative flex items-center">
+<input class="peer sr-only" type="checkbox"/>
+<div class="w-9 h-5 bg-slate-200 dark:bg-[#3a2c27] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">emergency_home</span>
+<span class="text-sm font-bold text-slate-700 dark:text-white">High Need Only</span>
+</div>
+</label>
+<!-- View Toggle -->
+<div class="bg-white dark:bg-[#2c1a15] border border-slate-200 dark:border-[#3a2c27] rounded-xl p-1 flex items-center shadow-sm">
+<button class="p-2 rounded-lg bg-slate-100 dark:bg-[#3a2c27] text-slate-900 dark:text-white shadow-sm">
+<span class="material-symbols-outlined text-[20px]">view_list</span>
+</button>
+<button class="p-2 rounded-lg text-slate-500 dark:text-[#bca39a] hover:bg-slate-50 dark:hover:bg-[#3a2c27]/50 transition-colors">
+<span class="material-symbols-outlined text-[20px]">map</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Filters -->
+<div class="mb-8 overflow-x-auto pb-2 scrollbar-hide">
+<div class="flex gap-3 min-w-max">
+<button class="px-5 py-2 rounded-full bg-primary text-white font-semibold text-sm shadow-lg shadow-primary/25 border border-transparent transition-transform active:scale-95">
+                    All Food
+                </button>
+<button class="px-5 py-2 rounded-full bg-white dark:bg-[#2c1a15] text-slate-600 dark:text-[#bca39a] border border-slate-200 dark:border-[#3a2c27] hover:border-slate-300 dark:hover:border-[#5a433a] font-medium text-sm transition-colors whitespace-nowrap">
+                    Vegetarian
+                </button>
+<button class="px-5 py-2 rounded-full bg-white dark:bg-[#2c1a15] text-slate-600 dark:text-[#bca39a] border border-slate-200 dark:border-[#3a2c27] hover:border-slate-300 dark:hover:border-[#5a433a] font-medium text-sm transition-colors whitespace-nowrap">
+                    Non-Veg
+                </button>
+<button class="px-5 py-2 rounded-full bg-white dark:bg-[#2c1a15] text-slate-600 dark:text-[#bca39a] border border-slate-200 dark:border-[#3a2c27] hover:border-slate-300 dark:hover:border-[#5a433a] font-medium text-sm transition-colors whitespace-nowrap">
+                    Prepared Meals
+                </button>
+<button class="px-5 py-2 rounded-full bg-white dark:bg-[#2c1a15] text-slate-600 dark:text-[#bca39a] border border-slate-200 dark:border-[#3a2c27] hover:border-slate-300 dark:hover:border-[#5a433a] font-medium text-sm transition-colors whitespace-nowrap">
+                    Raw Ingredients
+                </button>
+<button class="px-5 py-2 rounded-full bg-white dark:bg-[#2c1a15] text-slate-600 dark:text-[#bca39a] border border-slate-200 dark:border-[#3a2c27] hover:border-slate-300 dark:hover:border-[#5a433a] font-medium text-sm transition-colors whitespace-nowrap">
+                    Baked Goods
+                </button>
+</div>
+</div>
+<!-- Feed Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+<!-- Card 1 (Urgent) -->
+<div class="group bg-white dark:bg-[#2c1a15] rounded-xl overflow-hidden border border-slate-200 dark:border-[#3a2c27] hover:border-primary/30 dark:hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
+<div class="relative h-48 w-full overflow-hidden bg-slate-100 dark:bg-[#3a2c27]">
+<div class="absolute top-3 left-3 z-10">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-500/90 text-white text-xs font-bold backdrop-blur-sm shadow-sm">
+<span class="material-symbols-outlined text-[14px]">timer</span>
+                            Expiring Soon
+                        </span>
+</div>
+<div class="absolute top-3 right-3 z-10">
+<button class="p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Fresh salad bowls arranged on a wooden table" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAxIT36yDx143kNTXmSITHBt-ZqHSHEVOI_MZ1h9RDpm15y6rlHeReuvoulJeYFAkRsBv-vrzom66foOtb96HpCRldwXGsC9C3d23QR5mg0aFxJK1CpZ5kL_6C_-io7KVZN0f-PKfmgPmlibdMGGU9G-a1NIhSO3shumEYNE2bviyiHr3fKI_iXPY-iKec1HpSknXmCMwcWEsThZ-4nvgzjL7BDAWrsY8_JQz1xHQcCefKYEqbozg17GdR6togmTVcoWnCKADe9pA');"></div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight group-hover:text-primary transition-colors">50 Vegetarian Meals</h3>
+<p class="text-sm text-slate-500 dark:text-[#bca39a] mt-1">Green Leaf Bistro</p>
+</div>
+<div class="flex items-center justify-center bg-slate-100 dark:bg-[#3a2c27] rounded-lg px-2 py-1">
+<span class="text-xs font-bold text-slate-700 dark:text-white">2.5 km</span>
+</div>
+</div>
+<div class="flex items-center gap-4 my-3 text-sm text-slate-600 dark:text-[#bca39a]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">restaurant</span>
+<span>Ready to eat</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">schedule</span>
+<span>&lt; 2 hours</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-[#3a2c27] flex gap-3">
+<button class="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span>Claim Now</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group bg-white dark:bg-[#2c1a15] rounded-xl overflow-hidden border border-slate-200 dark:border-[#3a2c27] hover:border-primary/30 dark:hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
+<div class="relative h-48 w-full overflow-hidden bg-slate-100 dark:bg-[#3a2c27]">
+<div class="absolute top-3 right-3 z-10">
+<button class="p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Crates of assorted fresh vegetables" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAadeTglXWoMQx-S2wpVMzZxIso5HQQnPTa7hecrdsCbpv7zsYCBIRB1sInaKZ1WsJlppi-CInNExl4LDMDgIMv2obMWbJKUBeRfSIGC29GUcG8uQ3_jpmOMam6wKJFv3bAyzToELj4hnwgnbMWJga-QgEKiS33JFo-pcyrbTlI_Xe4vQSDKgCV_9z-p8SNf5EUAKBR-mSG_lnu31L2bNi3zHmEeGZFTYwvbxSR1r5xSIhIKpTDyEgT6cTVZL4fMR_bfb2fY7VEOg');"></div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight group-hover:text-primary transition-colors">Assorted Raw Veggies</h3>
+<p class="text-sm text-slate-500 dark:text-[#bca39a] mt-1">City Market Co-op</p>
+</div>
+<div class="flex items-center justify-center bg-slate-100 dark:bg-[#3a2c27] rounded-lg px-2 py-1">
+<span class="text-xs font-bold text-slate-700 dark:text-white">4.2 km</span>
+</div>
+</div>
+<div class="flex items-center gap-4 my-3 text-sm text-slate-600 dark:text-[#bca39a]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">grocery</span>
+<span>Raw Ingredients</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-slate-400">schedule</span>
+<span>24 hours</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-[#3a2c27] flex gap-3">
+<button class="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span>Claim Now</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group bg-white dark:bg-[#2c1a15] rounded-xl overflow-hidden border border-slate-200 dark:border-[#3a2c27] hover:border-primary/30 dark:hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
+<div class="relative h-48 w-full overflow-hidden bg-slate-100 dark:bg-[#3a2c27]">
+<div class="absolute top-3 left-3 z-10">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-500/90 text-white text-xs font-bold backdrop-blur-sm shadow-sm">
+<span class="material-symbols-outlined text-[14px]">severe_cold</span>
+                            Frozen
+                        </span>
+</div>
+<div class="absolute top-3 right-3 z-10">
+<button class="p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Freshly baked pizza slices" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDGDaT_JjepvGoVLxW0CnyzykaEe4reQ2axAa5WbAcCpBaCe6d5mk8-Ms_s_VUjh-i1o7lf98gsL1zn0iNifJj_4_QDHaoD1KgoTCrssh6S97N8TNR3iAH06gQ1pdk42zVafGfe0XSB7ipXBwq-oJnTr7fi1nyRYS1PRi8Tu7Q5PhiujfDpeY2VRyvU1yvkt5eFT-vxFNLFod1Q_nvk6NeCl252ErgOaOQ1YZNWh4uwqzEi1UYkb7nn6fX-GhQSuSGdfmwT0WfulA');"></div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight group-hover:text-primary transition-colors">20 Frozen Pizzas</h3>
+<p class="text-sm text-slate-500 dark:text-[#bca39a] mt-1">Dominos Downtown</p>
+</div>
+<div class="flex items-center justify-center bg-slate-100 dark:bg-[#3a2c27] rounded-lg px-2 py-1">
+<span class="text-xs font-bold text-slate-700 dark:text-white">1.8 km</span>
+</div>
+</div>
+<div class="flex items-center gap-4 my-3 text-sm text-slate-600 dark:text-[#bca39a]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">ac_unit</span>
+<span>Frozen</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-slate-400">schedule</span>
+<span>48 hours</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-[#3a2c27] flex gap-3">
+<button class="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span>Claim Now</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group bg-white dark:bg-[#2c1a15] rounded-xl overflow-hidden border border-slate-200 dark:border-[#3a2c27] hover:border-primary/30 dark:hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
+<div class="relative h-48 w-full overflow-hidden bg-slate-100 dark:bg-[#3a2c27]">
+<div class="absolute top-3 right-3 z-10">
+<button class="p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Baskets of assorted bread loaves" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuABqOUB349kfkdi1amD3D63mFuoeJRAhV4M7YJwX2Z7QGlm6B-PffpLbEiqqR4qd1hKUxmHm4S2Oyj4gyxgnrES8sRTiEX13yuFm4rfWRJ7F_j-da2blvkvecsV5attnmYhhkfHbuHvGnvp8XvTLXQHcYh_QGLRVWBtbN6h1bgOlAiOWOHbe4uR6s7wv7Pj83Yy_NKXqHQnsdl2Z74V8c6162-AALoDdnEaAesk07N1hoK3usN_O5RqqNgYqlAuMJUFkZSKgEnTMg');"></div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight group-hover:text-primary transition-colors">Surplus Bread Loaves</h3>
+<p class="text-sm text-slate-500 dark:text-[#bca39a] mt-1">Baker's Dozen</p>
+</div>
+<div class="flex items-center justify-center bg-slate-100 dark:bg-[#3a2c27] rounded-lg px-2 py-1">
+<span class="text-xs font-bold text-slate-700 dark:text-white">5.0 km</span>
+</div>
+</div>
+<div class="flex items-center gap-4 my-3 text-sm text-slate-600 dark:text-[#bca39a]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">bakery_dining</span>
+<span>Baked Goods</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-slate-400">schedule</span>
+<span>12 hours</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-[#3a2c27] flex gap-3">
+<button class="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span>Claim Now</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 5 (Urgent) -->
+<div class="group bg-white dark:bg-[#2c1a15] rounded-xl overflow-hidden border border-slate-200 dark:border-[#3a2c27] hover:border-primary/30 dark:hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
+<div class="relative h-48 w-full overflow-hidden bg-slate-100 dark:bg-[#3a2c27]">
+<div class="absolute top-3 left-3 z-10">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-500/90 text-white text-xs font-bold backdrop-blur-sm shadow-sm">
+<span class="material-symbols-outlined text-[14px]">timer</span>
+                            Urgent Pickup
+                        </span>
+</div>
+<div class="absolute top-3 right-3 z-10">
+<button class="p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Multiple boxes of cooked pasta meals" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDWxrx_NiY4XZ--fGgRh5MiO2i_Vq-QtlCKYaiU33Kk-LxTIZtqsOarLzDjPQtA3xzX8-KvfGJ2zucCbtEXfeSL9ni3IJ8yCWIiVp_-xdgo-wdPerjdsg44H9G3a4mEIGJ1VrHxMnOfEMjhF5HIrHs-7maWtz4nHbc6g3dyqCt0ZqYNtyfxQ4p6xY7CnJfqy9zAP2BTjo2U4g5HB-ANsAQ6et-he-72ZN_rc242SBI7B70ObsyQ2tm86NF9BS3hL2vZeVeIQ2p_8A');"></div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight group-hover:text-primary transition-colors">100 Pasta Portions</h3>
+<p class="text-sm text-slate-500 dark:text-[#bca39a] mt-1">Italian Feast Events</p>
+</div>
+<div class="flex items-center justify-center bg-slate-100 dark:bg-[#3a2c27] rounded-lg px-2 py-1">
+<span class="text-xs font-bold text-slate-700 dark:text-white">0.8 km</span>
+</div>
+</div>
+<div class="flex items-center gap-4 my-3 text-sm text-slate-600 dark:text-[#bca39a]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">restaurant_menu</span>
+<span>Bulk Meal</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">schedule</span>
+<span>&lt; 1 hour</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-[#3a2c27] flex gap-3">
+<button class="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span>Claim Now</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="group bg-white dark:bg-[#2c1a15] rounded-xl overflow-hidden border border-slate-200 dark:border-[#3a2c27] hover:border-primary/30 dark:hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
+<div class="relative h-48 w-full overflow-hidden bg-slate-100 dark:bg-[#3a2c27]">
+<div class="absolute top-3 right-3 z-10">
+<button class="p-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+</div>
+<div class="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Assorted fruits like apples and oranges" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAqkClQ7sn0QeM834bquPPoRC5nQHQ27ovwr18mVS2biJsaL4AiTUaZIA5OAPYJKRwK64iBEnNxSZRYRKmvy17O2i-EfxwoNFdAGhr8Gmxo3Ara7gAj5494ntcUI1TP2qouMgtrpFGnm6W6kWmE_sbALDJKuCnjObpUeWcSQjMBs7iPh0-ju6KKhST5sQGi2IyoPnVLvjyLd3U47U8jO-jR6pKVmUuIewdbVCgy9If4qAKE7YiHFF5MQNguC245wwZkzLasISiecw');"></div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight group-hover:text-primary transition-colors">Fresh Seasonal Fruit</h3>
+<p class="text-sm text-slate-500 dark:text-[#bca39a] mt-1">Whole Foods Local</p>
+</div>
+<div class="flex items-center justify-center bg-slate-100 dark:bg-[#3a2c27] rounded-lg px-2 py-1">
+<span class="text-xs font-bold text-slate-700 dark:text-white">6.5 km</span>
+</div>
+</div>
+<div class="flex items-center gap-4 my-3 text-sm text-slate-600 dark:text-[#bca39a]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">nutrition</span>
+<span>Fresh Produce</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-slate-400">schedule</span>
+<span>3 days</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-100 dark:border-[#3a2c27] flex gap-3">
+<button class="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span>Claim Now</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Load More / Footer Actions -->
+<div class="mt-12 mb-8 flex justify-center">
+<button class="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 dark:border-[#3a2c27] bg-white dark:bg-[#2c1a15] text-slate-700 dark:text-[#bca39a] hover:text-primary dark:hover:text-white hover:border-primary/50 transition-colors font-semibold">
+<span>Load more donations</span>
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</button>
+</div>
+</main>
+</body></html>

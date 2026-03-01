@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Volunteer Logistics Hub - Annadaan</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#ff6933",
+                        "primary-dark": "#e55a2b",
+                        "background-light": "#f8f6f5",
+                        "background-dark": "#181210",
+                        "surface-dark": "#281e1b",
+                        "surface-light": "#ffffff",
+                        "text-main": "#fcfcfc",
+                        "text-muted": "#bca39a",
+                        "border-color": "#3a2c27"
+                    },
+                    fontFamily: {
+                        display: ["Manrope", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-border-color px-6 py-4 bg-surface-light dark:bg-background-dark sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">volunteer_activism</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Annadaan</h2>
+</div>
+<div class="flex items-center gap-8">
+<div class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-text-muted hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold leading-normal" href="#">Logistics</a>
+<a class="text-slate-600 dark:text-text-muted hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">Community</a>
+<a class="text-slate-600 dark:text-text-muted hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">Profile</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-6 bg-primary hover:bg-primary-dark transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Donate Food</span>
+</button>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-slate-200 dark:border-border-color" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBELW-ODypq27sBGOoo4fKJGLPLAOIwj4GLsSxv9WKwBx0DkJEtEgStuS1TJAb21NxW_5rBwWUxQB46HxjffwCfbB43JS9Sf2CJHFvobmdBIcHo4M-x5-emz73fi-J4kUztSD8XNMxTQ9h_n6MM-b8frGzL_e41guu7mgHj9WL_1pbzoyxrnZHMYdVIjE0FfluQMGdSnxzG6yjdwb1A2SATtnPfeykjhznC24UKBhym5hQTs_gku9dq3GpuMLixuEuvahKNZAtxOw");'></div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex flex-1 flex-col md:flex-row overflow-hidden h-[calc(100vh-73px)]">
+<!-- Left Side: Interactive Map -->
+<div class="relative w-full md:w-2/3 h-1/2 md:h-full bg-slate-200 dark:bg-surface-dark border-b md:border-b-0 md:border-r border-slate-200 dark:border-border-color">
+<!-- Map Background Image Placeholder -->
+<div class="absolute inset-0 bg-cover bg-center grayscale-[20%] opacity-90" data-alt="Detailed city street map view" data-location="City Map" style='background-image: url("https://placeholder.pics/svg/300");'>
+</div>
+<!-- Map Overlay Controls -->
+<div class="absolute top-4 left-4 right-4 md:w-96 flex flex-col gap-4 z-10">
+<!-- Search Bar -->
+<div class="flex w-full items-center rounded-xl bg-surface-light dark:bg-surface-dark shadow-lg border border-slate-200 dark:border-border-color h-12 overflow-hidden">
+<div class="flex items-center justify-center pl-4 pr-2 text-slate-500 dark:text-text-muted">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="w-full bg-transparent border-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-text-muted focus:ring-0 text-sm font-medium h-full" placeholder="Search location or route ID"/>
+</div>
+</div>
+<!-- Map Controls (Zoom/Locate) -->
+<div class="absolute bottom-8 right-8 flex flex-col gap-2 z-10">
+<div class="flex flex-col rounded-lg bg-surface-light dark:bg-surface-dark shadow-lg border border-slate-200 dark:border-border-color overflow-hidden">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-background-dark text-slate-700 dark:text-white border-b border-slate-200 dark:border-border-color transition-colors">
+<span class="material-symbols-outlined block">add</span>
+</button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-background-dark text-slate-700 dark:text-white transition-colors">
+<span class="material-symbols-outlined block">remove</span>
+</button>
+</div>
+<button class="p-2 rounded-lg bg-primary text-white shadow-lg hover:bg-primary-dark transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+</div>
+<!-- Active Route Card Overlay on Map -->
+<div class="absolute bottom-8 left-8 right-8 md:right-auto md:w-80 bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-xl border border-slate-200 dark:border-border-color z-10">
+<div class="flex items-start gap-3">
+<div class="bg-primary/20 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold text-sm">Active Delivery</h4>
+<p class="text-slate-500 dark:text-text-muted text-xs mt-0.5">Route #9921 • 3.2 km remaining</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">On Time</span>
+<span class="text-slate-400 dark:text-slate-500 text-xs">ETA: 10 mins</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Logistics & Timeline -->
+<div class="w-full md:w-1/3 flex flex-col bg-surface-light dark:bg-background-dark h-1/2 md:h-full overflow-y-auto custom-scrollbar">
+<!-- Header for Logistics Panel -->
+<div class="p-6 pb-2">
+<div class="flex flex-col gap-1">
+<h1 class="text-slate-900 dark:text-white text-2xl font-black leading-tight tracking-[-0.033em]">Volunteer Hub</h1>
+<p class="text-slate-500 dark:text-text-muted text-sm font-medium">Manage your active food rescue missions.</p>
+</div>
+<div class="mt-6 flex items-center justify-between p-4 bg-slate-50 dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-border-color">
+<div class="flex flex-col">
+<span class="text-xs text-slate-500 dark:text-text-muted font-medium uppercase tracking-wider">Total Impact</span>
+<span class="text-lg font-bold text-slate-900 dark:text-white">1,240 Meals Saved</span>
+</div>
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">emoji_events</span>
+</div>
+</div>
+</div>
+<!-- Timeline Section -->
+<div class="flex-1 p-6 pt-2">
+<h3 class="text-slate-900 dark:text-white text-base font-bold mb-6 flex items-center gap-2">
+                    Current Mission Status
+                    <span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+</h3>
+<div class="relative pl-2">
+<!-- Vertical Line -->
+<div class="absolute left-[19px] top-2 bottom-4 w-0.5 bg-slate-200 dark:bg-border-color"></div>
+<!-- Step 1: Listed -->
+<div class="group relative flex gap-4 pb-8">
+<div class="relative z-10 flex flex-col items-center">
+<div class="flex size-10 items-center justify-center rounded-full bg-slate-100 dark:bg-surface-dark border-2 border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500 group-hover:border-primary group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">storefront</span>
+</div>
+</div>
+<div class="flex flex-col pt-1.5">
+<h4 class="text-slate-900 dark:text-white text-sm font-bold">Food Listed by Bakery</h4>
+<p class="text-slate-500 dark:text-text-muted text-xs mt-0.5">09:45 AM • Sunshine Bakery, 123 Main St</p>
+<div class="mt-2 flex gap-2">
+<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-surface-dark text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-border-color">Pastries</span>
+<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-surface-dark text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-border-color">Bread</span>
+</div>
+</div>
+</div>
+<!-- Step 2: Pickup Verified -->
+<div class="group relative flex gap-4 pb-8">
+<div class="relative z-10 flex flex-col items-center">
+<div class="flex size-10 items-center justify-center rounded-full bg-green-500 text-white shadow-lg shadow-green-500/20">
+<span class="material-symbols-outlined text-xl">check</span>
+</div>
+</div>
+<div class="flex flex-col pt-1.5">
+<h4 class="text-slate-900 dark:text-white text-sm font-bold">Pickup Verified</h4>
+<p class="text-slate-500 dark:text-text-muted text-xs mt-0.5">10:30 AM • Verification ID #8821</p>
+<p class="text-green-600 dark:text-green-400 text-xs font-medium mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> Successfully picked up
+                            </p>
+</div>
+</div>
+<!-- Step 3: In Transit (Active) -->
+<div class="group relative flex gap-4 pb-8">
+<div class="relative z-10 flex flex-col items-center">
+<div class="flex size-10 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30 ring-4 ring-primary/10 animate-pulse-slow">
+<span class="material-symbols-outlined text-xl">local_shipping</span>
+</div>
+</div>
+<div class="flex flex-col pt-1.5">
+<h4 class="text-slate-900 dark:text-white text-sm font-bold text-primary">In Transit</h4>
+<p class="text-slate-500 dark:text-text-muted text-xs mt-0.5">Current Status • ETA 15 mins</p>
+<div class="w-full bg-slate-200 dark:bg-surface-dark h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-primary h-full rounded-full w-3/4"></div>
+</div>
+</div>
+</div>
+<!-- Step 4: Dropoff (Pending) -->
+<div class="group relative flex gap-4">
+<div class="relative z-10 flex flex-col items-center">
+<div class="flex size-10 items-center justify-center rounded-full bg-slate-100 dark:bg-surface-dark border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-xl">location_on</span>
+</div>
+</div>
+<div class="flex flex-col pt-1.5">
+<h4 class="text-slate-400 dark:text-slate-500 text-sm font-bold">Delivered to Shelter</h4>
+<p class="text-slate-400 dark:text-slate-600 text-xs mt-0.5">Pending Arrival • Hope Community Center</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="p-6 pt-2 mt-auto bg-surface-light dark:bg-background-dark border-t border-slate-200 dark:border-border-color sticky bottom-0">
+<button class="w-full group flex items-center justify-center gap-3 rounded-xl h-14 bg-primary hover:bg-primary-dark transition-all shadow-lg shadow-primary/25 active:scale-[0.98]">
+<div class="text-white group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+</div>
+<span class="text-white text-base font-bold tracking-wide">Generate QR Code for Handover</span>
+</button>
+<p class="text-center text-xs text-slate-400 dark:text-slate-600 mt-3">
+                    Scan this code at the shelter to verify delivery.
+                </p>
+</div>
+</div>
+</main>
+</body></html>

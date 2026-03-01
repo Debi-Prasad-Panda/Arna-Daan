@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Annadaan - Bridge the Gap</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#ff6933",
+              secondary: "#2E7D32",
+              background: {
+                  light: "#f8f6f5",
+                  dark: "#121212", 
+                  card: "#1E1E1E",
+              },
+              surface: {
+                  dark: "#181818"
+              }
+            },
+            fontFamily: {
+              display: ["Manrope", "sans-serif"],
+            },
+            backgroundImage: {
+                'hero-gradient': 'linear-gradient(135deg, #FF6B35 0%, #2E7D32 100%)',
+                'glass': 'linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom utilities for glassmorphism and gradients */
+        .text-gradient {
+            background: linear-gradient(90deg, #FF6B35 0%, #FF9F1C 50%, #2E7D32 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-panel {
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-button {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 overflow-x-hidden antialiased selection:bg-primary selection:text-white">
+<div class="relative flex min-h-screen w-full flex-col">
+<!-- Header -->
+<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-white/5 bg-background-dark/80 backdrop-blur-md">
+<div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-white">
+<span class="material-symbols-outlined">volunteer_activism</span>
+</div>
+<span class="text-xl font-bold tracking-tight text-white">Annadaan</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-slate-300 hover:text-primary transition-colors" href="#">How it works</a>
+<a class="text-sm font-medium text-slate-300 hover:text-primary transition-colors" href="#">Impact</a>
+<a class="text-sm font-medium text-slate-300 hover:text-primary transition-colors" href="#">Partners</a>
+<a class="text-sm font-medium text-slate-300 hover:text-primary transition-colors" href="#">About</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden md:flex h-10 items-center justify-center rounded-lg px-6 text-sm font-bold text-white transition-colors hover:bg-white/5">
+                        Login
+                    </button>
+<button class="flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-primary/40">
+                        Sign Up
+                    </button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow pt-20">
+<!-- Hero Section -->
+<section class="relative overflow-hidden py-20 lg:py-32">
+<!-- Background decorative blobs -->
+<div class="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-primary/10 blur-[120px]"></div>
+<div class="absolute top-40 -right-40 h-[500px] w-[500px] rounded-full bg-secondary/10 blur-[120px]"></div>
+<div class="mx-auto max-w-7xl px-6 lg:px-8">
+<div class="grid gap-16 lg:grid-cols-2 lg:items-center">
+<div class="flex flex-col gap-8 max-w-2xl">
+<div class="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-sm">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+</span>
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Live Food Rescue Network</span>
+</div>
+<h1 class="text-5xl font-black leading-[1.1] tracking-tight text-white sm:text-6xl lg:text-7xl">
+<span class="text-gradient">Bridge the Gap</span> Between Surplus and Scarcity
+                            </h1>
+<p class="text-lg leading-relaxed text-slate-400 max-w-lg">
+                                Connect surplus food from events and restaurants directly to communities in need. Join our mission to end hunger and reduce waste simultaneously through technology.
+                            </p>
+<div class="flex flex-wrap gap-4 pt-2">
+<button class="group relative flex h-14 items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r from-primary to-[#ff8c33] px-8 text-base font-bold text-white shadow-xl shadow-primary/25 transition-all hover:scale-[1.02] hover:shadow-primary/40">
+<span>Start Donating</span>
+<span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+<button class="glass-button flex h-14 items-center justify-center gap-3 rounded-xl px-8 text-base font-bold text-white">
+<span class="material-symbols-outlined">volunteer_activism</span>
+<span>Volunteer Now</span>
+</button>
+</div>
+<div class="flex items-center gap-4 text-sm text-slate-500">
+<div class="flex -space-x-3">
+<div class="h-10 w-10 overflow-hidden rounded-full border-2 border-background-dark bg-slate-800" data-alt="Volunteer portrait woman smiling" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAEgICIvlAIG2fQslNw49sEKEeFKTmnX1KpumGHggCGccPTw52A-UsqbP8ZCAjyEdxqtipj0TKTRagD4sI2l_omxkQmSgbiDX6JMvZGSb-4uxO0z_jgepKmvynDF2hC76i-REnYbAH0ISOEbSph4oeyza6dQYV9gBNu0CEBNnYuTcVUIBGK6jOe05irdyb_BilsviLK6krfHnWXzhZAfiY5ROTmgOnw8G5Sii4hYoTMuuIcHKf5DEBZ2abW8fxqCXwpnG0FxrWl2w')"></div>
+<div class="h-10 w-10 overflow-hidden rounded-full border-2 border-background-dark bg-slate-800" data-alt="Volunteer portrait man smiling" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCPrT003E6w_T1MbD0pvQl5icRMiTspE6zyynAhB4zk7_El21j5CVcIj3HCPs92o_UEmNNlm_zS_kAaQDeb-7DwVSs6OmBbggn_td_EXb2P4x2uTUER25R68fWz_uhbwhBw1kyH3LpgL4Ny6eYKMLxsJw96PwPNxjJ0Kdqb8VU8XR0kg1VCvGpp1DMHXgkIeTYXV4cxpnMiBT7SKvTOeAb7jJKybIf2Ke4QTORnxbzf35lTP0BkdIJJfUGvGTCMCBB7ldT4YP_h3g')"></div>
+<div class="h-10 w-10 overflow-hidden rounded-full border-2 border-background-dark bg-slate-800" data-alt="Volunteer portrait young man" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAxBGGotviOf0Ut5pzqeZGgO6eyND-KU6OlTFlXrdrqWzQ9v0vfjtb4bIeEK95v2mZvkKbotD_ogCleiKxwqF--HQQOjjkMPT4oQsvGtZpHB8YT8Ue1qZXZzY65PrxNYpzpO8dgdcM1I72wKc9Jo9pCDbrnHfKkzskGNX31oTrLGkliyHVvBaVFgvV1UI1cl61JetHXHa9eJSUdZk_er14eit3lk457cbenOCPOiTtbqA1-It-3QLaFBAL5nIa5swCMR6U3d9iyAQ')"></div>
+<div class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-background-dark bg-surface-dark text-xs font-medium text-white">
+                                        +2k
+                                    </div>
+</div>
+<p>Joined by 2,000+ changemakers</p>
+</div>
+</div>
+<div class="relative lg:h-[600px] w-full flex items-center justify-center">
+<!-- Abstract Graphic / Image Representation -->
+<div class="relative z-10 w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-surface-dark/50" data-alt="Close up of hands sharing food in warm lighting">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent z-10"></div>
+<img alt="Food Sharing" class="w-full h-full object-cover opacity-80" data-alt="Hands sharing a bowl of fresh food" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAxz70BvNEHdKk3FpGdjTtC_1DzPU2tJDrgEw1rVvtIrAmh3ahYifQhqrfxejP_-1_s91KVp3XfZfSUATVTedf1Feyb8Wp5akApzNwTvoLK-55frztEkmXqAAnk-HuCz28rFdPz2UZR-HxgzNKgs7AMqnmb97oPapBJsftS6f0O9By_g-XUPixz84oKLKfYkYTZhoq7df_tnh9lF_7cyqRvTkWV3FqQMCHi_7DYxGK5_63_RGrEwE9snExFQdOgj_1BDKjPoZWsQ"/>
+<!-- Floating UI Cards -->
+<div class="absolute bottom-8 left-8 right-8 z-20 flex flex-col gap-4">
+<div class="glass-panel rounded-xl p-4 flex items-center justify-between shadow-lg backdrop-blur-xl">
+<div class="flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+<span class="material-symbols-outlined">soup_kitchen</span>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-400">Recent Rescue</p>
+<p class="text-white font-bold">50kg Rice &amp; Lentils</p>
+</div>
+</div>
+<span class="text-xs font-bold text-green-400 bg-green-400/10 px-2 py-1 rounded">Just now</span>
+</div>
+</div>
+</div>
+<!-- Decorative Elements -->
+<div class="absolute -right-8 top-1/4 z-30 glass-panel rounded-xl p-4 animate-[bounce_3s_infinite]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">eco</span>
+<div>
+<p class="text-xs text-slate-400">CO2 Saved</p>
+<p class="text-sm font-bold text-white">124kg today</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Section -->
+<section class="py-10 border-y border-white/5 bg-background-dark/50">
+<div class="mx-auto max-w-7xl px-6 lg:px-8">
+<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+<div class="group relative overflow-hidden rounded-2xl bg-surface-dark p-8 border border-white/5 hover:border-primary/30 transition-colors">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-sm font-medium text-slate-400">Total Meals Saved</p>
+<h3 class="mt-2 text-4xl font-black text-white tracking-tight">12,450+</h3>
+</div>
+<div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-green-500">trending_up</span>
+<span class="text-sm font-medium text-green-500">+15% this month</span>
+</div>
+</div>
+<div class="group relative overflow-hidden rounded-2xl bg-surface-dark p-8 border border-white/5 hover:border-primary/30 transition-colors">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-sm font-medium text-slate-400">Active Donors</p>
+<h3 class="mt-2 text-4xl font-black text-white tracking-tight">850</h3>
+</div>
+<div class="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">storefront</span>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-green-500">trending_up</span>
+<span class="text-sm font-medium text-green-500">+5% new partners</span>
+</div>
+</div>
+<div class="group relative overflow-hidden rounded-2xl bg-surface-dark p-8 border border-white/5 hover:border-primary/30 transition-colors">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-sm font-medium text-slate-400">Active Volunteers</p>
+<h3 class="mt-2 text-4xl font-black text-white tracking-tight">320</h3>
+</div>
+<div class="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">diversity_1</span>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-green-500">trending_up</span>
+<span class="text-sm font-medium text-green-500">+12% joined</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works -->
+<section class="py-24 bg-background-dark relative">
+<div class="mx-auto max-w-7xl px-6 lg:px-8">
+<div class="mb-16 md:flex md:items-end md:justify-between">
+<div class="max-w-2xl">
+<h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-4">How Annadaan Works</h2>
+<p class="text-lg text-slate-400">Our platform streamlines the entire process of food recovery, ensuring safety, speed, and dignity.</p>
+</div>
+<button class="mt-6 md:mt-0 text-primary hover:text-white font-semibold flex items-center gap-2 group transition-colors">
+                            Learn more about the process
+                            <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_right_alt</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Step 1 -->
+<div class="relative group">
+<div class="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative h-full rounded-2xl border border-white/5 bg-surface-dark p-8 hover:border-primary/50 transition-colors">
+<div class="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-gray-800 to-black border border-white/10 text-white shadow-lg">
+<span class="material-symbols-outlined text-2xl">schedule</span>
+</div>
+<h3 class="text-xl font-bold text-white mb-3">1. Quick Listing</h3>
+<p class="text-slate-400 leading-relaxed">
+                                    Donors list surplus food in under 2 minutes. Our AI suggests packaging and shelf-life details automatically.
+                                </p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative group">
+<div class="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative h-full rounded-2xl border border-white/5 bg-surface-dark p-8 hover:border-blue-500/50 transition-colors">
+<div class="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-gray-800 to-black border border-white/10 text-white shadow-lg">
+<span class="material-symbols-outlined text-2xl">verified_user</span>
+</div>
+<h3 class="text-xl font-bold text-white mb-3">2. Verified Match</h3>
+<p class="text-slate-400 leading-relaxed">
+                                    Our system instantly notifies nearby verified NGOs and shelters based on food type and quantity needed.
+                                </p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative group">
+<div class="absolute inset-0 bg-gradient-to-b from-secondary/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative h-full rounded-2xl border border-white/5 bg-surface-dark p-8 hover:border-secondary/50 transition-colors">
+<div class="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-gray-800 to-black border border-white/10 text-white shadow-lg">
+<span class="material-symbols-outlined text-2xl">local_shipping</span>
+</div>
+<h3 class="text-xl font-bold text-white mb-3">3. Instant Logistics</h3>
+<p class="text-slate-400 leading-relaxed">
+                                    Volunteers or partner delivery services are dispatched for pickup, tracked in real-time until delivery.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Call to Action -->
+<section class="relative py-24 overflow-hidden">
+<div class="absolute inset-0 bg-surface-dark"></div>
+<!-- Gradient Overlay -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-background-dark to-secondary/20 opacity-30"></div>
+<div class="relative mx-auto max-w-4xl px-6 text-center lg:px-8">
+<h2 class="text-3xl font-bold tracking-tight text-white sm:text-5xl mb-6">Ready to make a difference?</h2>
+<p class="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">
+                        Every plate of food saved is a step towards a hunger-free world. Whether you are a restaurant, volunteer, or NGO, we need you.
+                    </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+<button class="w-full sm:w-auto flex h-14 items-center justify-center gap-2 rounded-xl bg-white px-8 text-base font-bold text-background-dark transition-all hover:bg-slate-200">
+                            Join as a Partner
+                        </button>
+<button class="w-full sm:w-auto glass-button flex h-14 items-center justify-center gap-2 rounded-xl px-8 text-base font-bold text-white">
+                            Download App
+                        </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-background-dark border-t border-white/10 pt-16 pb-8">
+<div class="mx-auto max-w-7xl px-6 lg:px-8">
+<div class="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-5">
+<div class="col-span-2 lg:col-span-2">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">volunteer_activism</span>
+<span class="text-2xl font-bold text-white">Annadaan</span>
+</div>
+<p class="text-sm text-slate-400 max-w-xs mb-6">
+                            Bridging the gap between abundance and need through technology, community, and compassion.
+                        </p>
+<div class="flex gap-4">
+<a class="text-slate-400 hover:text-white transition-colors" href="#"><span class="sr-only">Twitter</span><svg class="h-5 w-5" fill="currentColor" viewbox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path></svg></a>
+<a class="text-slate-400 hover:text-white transition-colors" href="#"><span class="sr-only">GitHub</span><svg class="h-5 w-5" fill="currentColor" viewbox="0 0 24 24"><path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path></svg></a>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-white mb-4">Platform</h3>
+<ul class="space-y-3">
+<li><a class="text-sm text-slate-400 hover:text-white" href="#">Donate Food</a></li>
+<li><a class="text-sm text-slate-400 hover:text-white" href="#">Find Food</a></li>
+<li><a class="text-sm text-slate-400 hover:text-white" href="#">Volunteer</a></li>
+<li><a class="text-sm text-slate-400 hover:text-white" href="#">Mobile App</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-white mb-4">Company</h3>
+<ul class="space-y-3">
+<li><a class="text-sm text-slate-400 hover:text-white" href="#">About Us</a></li>
+<li><a class="text-sm text-slate-400 hover:text-white" href="#">Impact Report</a></li>
+<li><a class="text-sm text-slate-400 hover:text-white" href="#">Careers</a></li>
+<li><a class="text-sm text-slate-400 hover:text-white" href="#">Contact</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-white mb-4">Legal</h3>
+<ul class="space-y-3">
+<li><a class="text-sm text-slate-400 hover:text-white" href="#">Privacy Policy</a></li>
+<li><a class="text-sm text-slate-400 hover:text-white" href="#">Terms of Service</a></li>
+<li><a class="text-sm text-slate-400 hover:text-white" href="#">Food Safety Guidelines</a></li>
+</ul>
+</div>
+</div>
+<div class="mt-16 border-t border-white/10 pt-8 flex items-center justify-between">
+<p class="text-xs text-slate-500">© 2024 Annadaan Foundation. All rights reserved.</p>
+</div>
+</div>
+</footer>
+</div>
+</body></html>
