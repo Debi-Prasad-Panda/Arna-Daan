@@ -8,10 +8,8 @@ export const account = new Account(client);
 export const databases = new Databases(client);
 export const storage = new Storage(client);
 
-// Default database IDs and collection IDs will go here once you create them in Appwrite
 export const APPWRITE_CONFIG = {
-    // Add your DB and Collection IDs here later
-    // databaseId: '...',
-    // usersCollectionId: '...',
-    // listingsCollectionId: '...',
+    databaseId: import.meta.env.VITE_APPWRITE_DATABASE_ID,
+    listingsCollectionId: import.meta.env.VITE_APPWRITE_LISTINGS_COLLECTION_ID,
+    bucketId: import.meta.env.VITE_APPWRITE_BUCKET_ID,
 };

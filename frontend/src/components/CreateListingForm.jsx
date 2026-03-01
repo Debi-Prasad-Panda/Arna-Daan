@@ -1,14 +1,55 @@
 import { useState } from 'react'
+import useListingStore from '../store/listingStore'
+import useAuthStore from '../store/authStore'
 
 const dietOptions = [
-  { value: 'veg', label: 'Vegetarian', dot: 'bg-green-500', checked: 'peer-checked:bg-green-900/30 peer-checked:border-green-500 peer-checked:text-green-400' },
-  { value: 'nonveg', label: 'Non-Veg', dot: 'bg-red-500', checked: 'peer-checked:bg-red-900/30 peer-checked:border-red-500 peer-checked:text-red-400' },
-  { value: 'vegan', label: 'Vegan', dot: 'bg-yellow-500', checked: 'peer-checked:bg-yellow-900/30 peer-checked:border-yellow-500 peer-checked:text-yellow-400' },
+  { value: 'VEG', label: 'Vegetarian', dot: 'bg-green-500', checked: 'peer-checked:bg-green-900/30 peer-checked:border-green-500 peer-checked:text-green-400' },
+  { value: 'NON-VEG', label: 'Non-Veg', dot: 'bg-red-500', checked: 'peer-checked:bg-red-900/30 peer-checked:border-red-500 peer-checked:text-red-400' },
+  { value: 'VEGAN', label: 'Vegan', dot: 'bg-yellow-500', checked: 'peer-checked:bg-yellow-900/30 peer-checked:border-yellow-500 peer-checked:text-yellow-400' },
 ]
 
 export default function CreateListingForm() {
-  const [diet, setDiet] = useState('veg')
+  const [title, setTitle] = useState('')
+  const [category, setCategory] = useState('Cooked Meals')
+  const [quantity, setQuantity] = useState('')
+  const [bestBefore, setBestBefore] = useState('')
+  const [diet, setDiet] = useState('VEG')
   const [safety, setSafety] = useState(false)
+  
+  const [formError, setFormError] = useState('')
+
+  const createListing = useListingStore(state => state.createListing)
+  const isCreating = useListingStore(state => state.isLoading)
+  const user = useAuthStore(state => state.user)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!title || !quantity || !bestBefore || !safety) {
+      setFormError('Please fill in all required fields and confirm safety guidelines.')
+      return
+    }
+    setFormError('')
+
+    try {
+      await createListing({
+        title,
+        category,
+        quantity: parseInt(quantity, 10),
+        bestBefore,
+        diet,
+        status: 'Active',
+        donorId: user.$id,
+        donorName: user.name,
+      })
+      // Reset form on success
+      setTitle('')
+      setQuantity('')
+      setBestBefore('')
+      setSafety(false)
+    } catch (err) {
+      setFormError(err.message || 'Failed to create listing.')
+    }
+  }
 
   return (
     <div className="xl:col-span-7 flex flex-col gap-6">
@@ -23,13 +64,21 @@ export default function CreateListingForm() {
           </div>
         </div>
 
-        <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+        {formError && (
+          <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl p-3 text-sm font-medium">
+            {formError}
+          </div>
+        )}
+
+        <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Title + Category */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-[#bca39a]">Food Title</label>
               <input
                 type="text"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
                 placeholder="e.g., Mixed Vegetable Curry"
                 className="w-full bg-[#181210] border border-[#3a2c27] rounded-lg px-4 py-3 text-white placeholder-[#bca39a]/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
               />
@@ -37,11 +86,15 @@ export default function CreateListingForm() {
             <div className="space-y-2">
               <label className="text-sm font-medium text-[#bca39a]">Category</label>
               <div className="relative">
-                <select className="w-full bg-[#181210] border border-[#3a2c27] rounded-lg px-4 py-3 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all cursor-pointer">
-                  <option>Cooked Meals</option>
-                  <option>Raw Ingredients</option>
-                  <option>Packaged Food</option>
-                  <option>Baked Goods</option>
+                <select 
+                  value={category}
+                  onChange={e => setCategory(e.target.value)}
+                  className="w-full bg-[#181210] border border-[#3a2c27] rounded-lg px-4 py-3 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all cursor-pointer"
+                >
+                  <option value="Cooked Meals">Cooked Meals</option>
+                  <option value="Raw Ingredients">Raw Ingredients</option>
+                  <option value="Packaged Food">Packaged Food</option>
+                  <option value="Baked Goods">Baked Goods</option>
                 </select>
                 <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#bca39a] pointer-events-none">expand_more</span>
               </div>
@@ -55,8 +108,10 @@ export default function CreateListingForm() {
               <div className="relative">
                 <input
                   type="number"
+                  value={quantity}
+                  onChange={e => setQuantity(e.target.value)}
                   placeholder="20"
-                  className="w-full bg-[#181210] border border-[#3a2c27] rounded-lg px-4 py-3 text-white placeholder-[#bca39a]/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  className="w-full bg-[#181210] border border-[#3a2c27] rounded-lg px-4 py-3 text-white placeholder-[#bca39a]/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all pr-20"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#bca39a] text-sm pointer-events-none">Servings</span>
               </div>
@@ -65,6 +120,8 @@ export default function CreateListingForm() {
               <label className="text-sm font-medium text-[#bca39a]">Best Before</label>
               <input
                 type="datetime-local"
+                value={bestBefore}
+                onChange={e => setBestBefore(e.target.value)}
                 className="w-full bg-[#181210] border border-[#3a2c27] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all [&::-webkit-calendar-picker-indicator]:invert"
               />
             </div>
@@ -115,8 +172,8 @@ export default function CreateListingForm() {
                   onChange={(e) => setSafety(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="size-5 border-2 border-[#3a2c27] rounded bg-[#181210] peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center" onClick={() => setSafety(!safety)}>
-                  {safety && <span className="material-symbols-outlined text-white text-xs">check</span>}
+                <div className="flex size-5 border-2 border-[#3a2c27] rounded bg-[#181210] peer-checked:bg-primary peer-checked:border-primary transition-all items-center justify-center">
+                  {safety && <span className="material-symbols-outlined text-white text-xs font-bold leading-none">check</span>}
                 </div>
               </div>
               <span className="text-sm text-[#bca39a] group-hover:text-white transition-colors">
@@ -127,10 +184,22 @@ export default function CreateListingForm() {
 
           <button
             type="submit"
-            className="w-full bg-primary hover:bg-orange-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.99] flex items-center justify-center gap-2"
+            disabled={isCreating}
+            className={`w-full bg-primary hover:bg-orange-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.99] flex items-center justify-center gap-2 ${
+              isCreating ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
           >
-            Post Donation
-            <span className="material-symbols-outlined">arrow_forward</span>
+            {isCreating ? (
+              <>
+                <span className="material-symbols-outlined animate-spin text-[20px]">refresh</span>
+                Posting...
+              </>
+            ) : (
+              <>
+                Post Donation
+                <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+              </>
+            )}
           </button>
         </form>
       </div>

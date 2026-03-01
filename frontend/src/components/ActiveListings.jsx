@@ -1,70 +1,62 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import useListingStore from '../store/listingStore'
 
-const LISTING_IMGS = {
-  rice: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUNyGSEU1fovxDPHC5CW9NhKOYvP4Qc8wkDwNYtJiEHhCYU1uZAVGRQbZ9ReoqT2iaTASE3ByNloa9kM6ASlSh4yv1ffZxCNrDi3aoYTaXKUeTtHc9EjnjBC6Ue_NNZ29EjnU8h97PuclaWAlglX_Vs0vYfNU6B1DSBL9RRFKGWXI9BzfBwSeL65rprr7kyaqr-lBT-8_y3D3L2uHQWKm_CXT4WagxYhJtSDYRuGZIQlHwclRgIslQO7X1U2N71ON6oRlsJ_X3sQ',
-  bread: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCo95zsgMUTRXiXD4uD-quN4DJMZZWSB0230RB9d3STpCkIUC6tSv7_wZR1A5lutYcYY2S-vAc76HGIqLYMD8f958vn0pmSi03zJVBmuWpYqEhJbafvAkRZPLanV022qZtPTrG7hZ3eb32M1uQUfUqt6q1_yMgcPZU6n_tfochhgXDi9fYc7qA8uXKWoJ-AlSSgZUUhGRs1_qhvYScPlQddQ03sZ7uMFQc1mZtsHHhkJdSR6dOgkvtuI-9X_laXOKXq8OD4GTmSzg',
-  chicken: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDdticwSA6Yb3YZwMY_36OcyTZR50W11AhYxJ7IpORggst1jwLjoZ6QwmTCe_rRU6SLGOs8joIoTX7e6KqBvWo8IWVWbPfZGS_P6OjVkHSm8zktNVec5WS7v9DRR81LIfBYykQMQ7jhCDU6hDdiF4jbkotvBnWK9xd1ucX-QZSWmnWCj7ePsy8RUbC3UvVgeMCj7bTF9itGfogDXAZbQDry8w1eeQeuHaXxWs8TDkZ0_Dtk-9rfKY3rgMttf7e7P6NV8F7X1RYTCg',
+// Safe fallback for date formatting without adding dependencies right away
+const getExpiryText = (dateString, status) => {
+  if (status === 'Closed' || status === 'Picked Up') return `Completed`
+  if (!dateString) return 'No expiry set'
+  const date = new Date(dateString)
+  if (isNaN(date)) return dateString
+  
+  const now = new Date()
+  const diffMs = date - now
+  if (diffMs < 0) return 'Expired'
+  
+  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60))
+  if (diffHrs < 24) return `Expires in ${diffHrs}h`
+  const diffDays = Math.floor(diffHrs / 24)
+  return `Expires in ${diffDays}d`
 }
 
-const LISTINGS = [
-  {
-    id: 1,
-    title: 'Surplus Rice & Dal',
-    servings: 'Approx. 40 servings',
-    expiry: 'Expires in 3h',
-    expiryUrgent: true,
-    distance: '2.5 km away',
-    diet: 'VEG',
-    dietColor: 'bg-green-900/80 text-green-400 border-green-700',
-    status: 'Active',
-    statusColor: 'bg-green-600/20 text-green-400 border-green-600/30',
-    img: LISTING_IMGS.rice,
-    faded: false,
-    grayscale: false,
-  },
-  {
-    id: 2,
-    title: 'Assorted Bakery Items',
-    servings: '15 boxes of pastries',
-    expiry: 'Expires in 12h',
-    expiryUrgent: false,
-    distance: '5.0 km away',
-    diet: 'VEGAN',
-    dietColor: 'bg-yellow-900/80 text-yellow-400 border-yellow-700',
-    status: 'Picked Up',
-    statusColor: 'bg-blue-600/20 text-blue-400 border-blue-600/30',
-    img: LISTING_IMGS.bread,
-    faded: false,
-    grayscale: false,
-  },
-  {
-    id: 3,
-    title: 'Grilled Chicken Surplus',
-    servings: '30 servings',
-    expiry: 'Completed yesterday',
-    expiryUrgent: false,
-    distance: null,
-    diet: 'NON-VEG',
-    dietColor: 'bg-red-900/80 text-red-400 border-red-700',
-    status: 'Closed',
-    statusColor: 'bg-[#3a2c27] text-[#bca39a]',
-    img: LISTING_IMGS.chicken,
-    faded: true,
-    grayscale: true,
-  },
-]
+const getDietStyle = (diet) => {
+  switch (diet?.toUpperCase()) {
+    case 'VEG': return 'bg-green-900/80 text-green-400 border-green-700'
+    case 'VEGAN': return 'bg-yellow-900/80 text-yellow-400 border-yellow-700'
+    case 'NON-VEG': return 'bg-red-900/80 text-red-400 border-red-700'
+    default: return 'bg-[#3a2c27] text-[#bca39a] border-[#5a433a]'
+  }
+}
+
+const getStatusStyle = (status) => {
+  switch (status) {
+    case 'Active': return 'bg-green-600/20 text-green-400 border-green-600/30'
+    case 'Picked Up': return 'bg-blue-600/20 text-blue-400 border-blue-600/30'
+    case 'Closed': return 'bg-[#3a2c27] text-[#bca39a] border-transparent'
+    default: return 'bg-[#3a2c27] text-[#bca39a] border-transparent'
+  }
+}
+
+const DEFAULT_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUNyGSEU1fovxDPHC5CW9NhKOYvP4Qc8wkDwNYtJiEHhCYU1uZAVGRQbZ9ReoqT2iaTASE3ByNloa9kM6ASlSh4yv1ffZxCNrDi3aoYTaXKUeTtHc9EjnjBC6Ue_NNZ29EjnU8h97PuclaWAlglX_Vs0vYfNU6B1DSBL9RRFKGWXI9BzfBwSeL65rprr7kyaqr-lBT-8_y3D3L2uHQWKm_CXT4WagxYhJtSDYRuGZIQlHwclRgIslQO7X1U2N71ON6oRlsJ_X3sQ'
 
 function ListingCard({ listing }) {
+  const isClosed = listing.status === 'Closed'
+  const dietColor = getDietStyle(listing.diet)
+  const statusColor = getStatusStyle(listing.status)
+  const expiryText = getExpiryText(listing.bestBefore, listing.status)
+  
+  // Basic heuristic: if it expires in < 24h, mark urgent
+  const isUrgent = listing.status === 'Active' && expiryText.includes('Expires in') && !expiryText.includes('d')
+
   return (
-    <div className={`bg-[#23140f] border border-[#3a2c27] rounded-xl p-4 flex gap-4 hover:border-primary/50 transition-colors group ${listing.faded ? 'opacity-60 hover:opacity-100' : ''}`}>
-      <div className="w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-lg overflow-hidden relative">
+    <div className={`bg-[#23140f] border border-[#3a2c27] rounded-xl p-4 flex gap-4 hover:border-primary/50 transition-colors group ${isClosed ? 'opacity-60 hover:opacity-100' : ''}`}>
+      <div className="w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-lg overflow-hidden relative border border-[#3a2c27]">
         <img
-          src={listing.img}
+          src={listing.imageUrl || DEFAULT_IMG}
           alt={listing.title}
-          className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${listing.grayscale ? 'grayscale' : ''}`}
+          className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isClosed ? 'grayscale' : ''}`}
         />
-        <div className={`absolute top-2 left-2 backdrop-blur-sm text-[10px] font-bold px-2 py-0.5 rounded-full border ${listing.dietColor}`}>
-          {listing.diet}
+        <div className={`absolute top-2 left-2 backdrop-blur-sm text-[10px] font-bold px-2 py-0.5 rounded-full border ${dietColor}`}>
+          {listing.diet || 'N/A'}
         </div>
       </div>
       <div className="flex flex-col flex-1 justify-between min-w-0">
@@ -73,26 +65,22 @@ function ListingCard({ listing }) {
             <h3 className="font-bold text-base leading-tight line-clamp-1 text-white">{listing.title}</h3>
             <span className="material-symbols-outlined text-[#bca39a] cursor-pointer hover:text-white text-lg flex-shrink-0 ml-2">more_vert</span>
           </div>
-          <p className="text-[#bca39a] text-sm mt-1">{listing.servings}</p>
+          <p className="text-[#bca39a] text-sm mt-1">{listing.quantity ? `Approx. ${listing.quantity} servings` : listing.category}</p>
         </div>
+        
         <div className="flex items-center gap-4 mt-2 flex-wrap">
           <div className="flex items-center gap-1.5 text-xs">
-            <span className="material-symbols-outlined text-sm text-[#bca39a]">{listing.distance ? 'schedule' : 'event_available'}</span>
-            <span className={listing.expiryUrgent ? 'text-orange-400 font-medium' : 'text-[#bca39a]'}>{listing.expiry}</span>
+            <span className="material-symbols-outlined text-sm text-[#bca39a]">schedule</span>
+            <span className={isUrgent ? 'text-orange-400 font-medium' : 'text-[#bca39a]'}>{expiryText}</span>
           </div>
-          {listing.distance && (
-            <div className="flex items-center gap-1.5 text-[#bca39a] text-xs">
-              <span className="material-symbols-outlined text-sm">location_on</span>
-              <span>{listing.distance}</span>
-            </div>
-          )}
         </div>
+        
         <div className="mt-3 flex gap-2">
           <button className="flex-1 bg-[#3a2c27] hover:bg-white hover:text-black text-white text-xs font-bold py-2 rounded-lg transition-colors">
-            {listing.status === 'Closed' ? 'Details' : 'Edit'}
+            {isClosed ? 'Details' : 'Edit'}
           </button>
-          <button className={`flex-1 text-xs font-bold py-2 rounded-lg border ${listing.statusColor}`}>
-            {listing.status}
+          <button className={`flex-1 text-xs font-bold py-2 rounded-lg border ${statusColor}`}>
+            {listing.status || 'Active'}
           </button>
         </div>
       </div>
@@ -101,26 +89,59 @@ function ListingCard({ listing }) {
 }
 
 export default function ActiveListings() {
+  const listings = useListingStore(state => state.listings)
+  const fetchListings = useListingStore(state => state.fetchListings)
+  const isLoading = useListingStore(state => state.isLoading)
+  const error = useListingStore(state => state.error)
+
+  useEffect(() => {
+    fetchListings()
+  }, [fetchListings])
+
+  // Fake Monthly goal calculation for demo purposes
+  const totalMeals = listings.reduce((sum, item) => sum + (item.quantity || 0), 0)
+  const goal = 1500
+  const progressPercent = Math.min(Math.round((totalMeals / goal) * 100), 100)
+
   return (
     <div className="xl:col-span-5 flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">Active Listings</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-bold text-white">Active Listings</h2>
+          {isLoading && <span className="material-symbols-outlined animate-spin text-primary text-sm">refresh</span>}
+        </div>
         <a className="text-sm text-primary font-medium hover:underline" href="#">View All</a>
       </div>
+      
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl p-4 text-sm font-medium">
+          {error}
+        </div>
+      )}
+
       <div className="flex flex-col gap-4">
-        {LISTINGS.map((l) => <ListingCard key={l.id} listing={l} />)}
+        {listings.length === 0 && !isLoading && !error ? (
+          <div className="text-center py-10 bg-[#23140f] border border-[#3a2c27] rounded-xl">
+            <span className="material-symbols-outlined text-[#5a433a] text-5xl mb-3">inventory_2</span>
+            <p className="text-[#bca39a] font-medium">No food listings yet.</p>
+            <p className="text-sm text-[#5a433a] mt-1">Create your first donation to see it here.</p>
+          </div>
+        ) : (
+          listings.map((l) => <ListingCard key={l.$id} listing={l} />)
+        )}
       </div>
+      
       {/* Monthly Goal Card */}
       <div className="mt-2 bg-gradient-to-br from-[#2a1d18] to-[#23140f] border border-[#3a2c27] rounded-2xl p-6 relative overflow-hidden">
         <div className="relative z-10">
           <h3 className="font-bold text-xl text-white">Monthly Goal</h3>
-          <p className="text-[#bca39a] text-sm mt-1 mb-4">You are close to reaching your donation goal for March!</p>
-          <div className="w-full bg-black/40 rounded-full h-3 mb-2">
-            <div className="bg-gradient-to-r from-orange-500 to-primary h-3 rounded-full" style={{ width: '85%' }} />
+          <p className="text-[#bca39a] text-sm mt-1 mb-4">You are close to reaching your donation goal for this month!</p>
+          <div className="w-full bg-black/40 rounded-full h-3 mb-2 overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 to-primary h-full rounded-full transition-all duration-1000" style={{ width: `${progressPercent}%` }} />
           </div>
           <div className="flex justify-between text-xs font-bold text-[#bca39a]">
-            <span>1,250 Meals</span>
-            <span className="text-white">Goal: 1,500</span>
+            <span>{totalMeals} Meals Donated</span>
+            <span className="text-white">Goal: {goal}</span>
           </div>
         </div>
         <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
