@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import useListingStore from '../store/listingStore'
 import useAuthStore from '../store/authStore'
+import { storage, APPWRITE_CONFIG } from '../lib/appwrite'
+import { ID } from 'appwrite'
 
 const dietOptions = [
   { value: 'VEG', label: 'Vegetarian', dot: 'bg-green-500', checked: 'peer-checked:bg-green-900/30 peer-checked:border-green-500 peer-checked:text-green-400' },
@@ -22,6 +24,12 @@ export default function CreateListingForm() {
   const isCreating = useListingStore(state => state.isLoading)
   const user = useAuthStore(state => state.user)
 
+  // Image upload state
+  const [imageFile, setImageFile]       = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
+  const [uploading, setUploading]       = useState(false)
+  const fileInputRef = useRef(null)
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!title || !quantity || !bestBefore || !safety) {
@@ -31,6 +39,15 @@ export default function CreateListingForm() {
     setFormError('')
 
     try {
+      // 1. Upload image if one was selected
+      let imageUrl = null
+      if (imageFile && APPWRITE_CONFIG.bucketId && APPWRITE_CONFIG.bucketId !== 'YOUR_BUCKET_ID_HERE') {
+        setUploading(true)
+        const uploaded = await storage.createFile(APPWRITE_CONFIG.bucketId, ID.unique(), imageFile)
+        imageUrl = `${import.meta.env.VITE_APPWRITE_ENDPOINT}/storage/buckets/${APPWRITE_CONFIG.bucketId}/files/${uploaded.$id}/view?project=${import.meta.env.VITE_APPWRITE_PROJECT_ID}`
+        setUploading(false)
+      }
+      // 2. Create listing document
       await createListing({
         title,
         category,
@@ -40,12 +57,15 @@ export default function CreateListingForm() {
         status: 'Active',
         donorId: user.$id,
         donorName: user.name,
+        ...(imageUrl ? { imageUrl } : {}),
       })
-      // Reset form on success
+      // Reset form
       setTitle('')
       setQuantity('')
       setBestBefore('')
       setSafety(false)
+      setImageFile(null)
+      setImagePreview(null)
     } catch (err) {
       setFormError(err.message || 'Failed to create listing.')
     }
@@ -152,14 +172,50 @@ export default function CreateListingForm() {
 
           {/* Upload */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-[#bca39a]">Upload Photos</label>
-            <div className="w-full border-2 border-dashed border-[#3a2c27] rounded-xl bg-[#181210]/50 hover:bg-[#181210] hover:border-primary/50 transition-all p-8 flex flex-col items-center justify-center text-center cursor-pointer group">
-              <div className="bg-[#23140f] p-3 rounded-full mb-3 group-hover:scale-110 transition-transform duration-300">
-                <span className="material-symbols-outlined text-primary text-2xl">cloud_upload</span>
+            <label className="text-sm font-medium text-[#bca39a]">Food Photo <span className="text-[#5a433a]">(optional)</span></label>
+
+            {/* Hidden real file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="sr-only"
+              onChange={(e) => {
+                const f = e.target.files?.[0]
+                if (!f) return
+                if (f.size > 3 * 1024 * 1024) { setFormError('Image must be under 3 MB.'); return }
+                setImageFile(f)
+                setImagePreview(URL.createObjectURL(f))
+                setFormError('')
+              }}
+            />
+
+            {imagePreview ? (
+              <div className="relative rounded-xl overflow-hidden border border-[#3a2c27] group">
+                <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover" />
+                <button
+                  type="button"
+                  onClick={() => { setImageFile(null); setImagePreview(null) }}
+                  className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1 transition-all opacity-0 group-hover:opacity-100"
+                >
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                </button>
+                <div className="absolute bottom-2 left-2 text-[10px] text-white/70 bg-black/50 px-2 py-0.5 rounded-full">
+                  {(imageFile.size / 1024).toFixed(0)} KB
+                </div>
               </div>
-              <p className="text-white font-medium">Click to upload or drag and drop</p>
-              <p className="text-[#bca39a] text-sm mt-1">PNG, JPG or GIF (max. 3MB — will be compressed)</p>
-            </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full border-2 border-dashed border-[#3a2c27] rounded-xl bg-[#181210]/50 hover:bg-[#181210] hover:border-primary/50 transition-all p-8 flex flex-col items-center justify-center text-center cursor-pointer group"
+              >
+                <div className="bg-[#23140f] p-3 rounded-full mb-3 group-hover:scale-110 transition-transform duration-300">
+                  <span className="material-symbols-outlined text-primary text-2xl">cloud_upload</span>
+                </div>
+                <p className="text-white font-medium">Click to upload a food photo</p>
+                <p className="text-[#bca39a] text-sm mt-1">JPG, PNG, WebP or GIF · max 3 MB</p>
+              </div>
+            )}
           </div>
 
           {/* Safety checkbox */}
@@ -184,21 +240,17 @@ export default function CreateListingForm() {
 
           <button
             type="submit"
-            disabled={isCreating}
+            disabled={isCreating || uploading}
             className={`w-full bg-primary hover:bg-orange-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.99] flex items-center justify-center gap-2 ${
-              isCreating ? 'opacity-70 cursor-not-allowed' : ''
+              isCreating || uploading ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >
-            {isCreating ? (
-              <>
-                <span className="material-symbols-outlined animate-spin text-[20px]">refresh</span>
-                Posting...
-              </>
+            {uploading ? (
+              <><span className="material-symbols-outlined animate-spin text-[20px]">cloud_upload</span>Uploading photo…</>
+            ) : isCreating ? (
+              <><span className="material-symbols-outlined animate-spin text-[20px]">refresh</span>Posting...</>
             ) : (
-              <>
-                Post Donation
-                <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
-              </>
+              <>Post Donation<span className="material-symbols-outlined text-[20px]">arrow_forward</span></>
             )}
           </button>
         </form>

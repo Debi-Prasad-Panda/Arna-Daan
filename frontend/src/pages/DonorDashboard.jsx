@@ -1,7 +1,10 @@
 import DashboardTopNav from '../components/DashboardTopNav'
 import CreateListingForm from '../components/CreateListingForm'
 import ActiveListings from '../components/ActiveListings'
+import IncomingRequests from '../components/IncomingRequests'
 import useAuthStore from '../store/authStore'
+import useListingStore from '../store/listingStore'
+import { useEffect } from 'react'
 
 const STATS = [
   {
@@ -56,6 +59,8 @@ function StatCard({ stat }) {
 
 export default function DonorDashboard() {
   const user = useAuthStore(state => state.user)
+  const { fetchListings } = useListingStore()
+  useEffect(() => { fetchListings() }, [])
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#181210', color: '#ffffff' }}>
       <DashboardTopNav />
@@ -79,6 +84,9 @@ export default function DonorDashboard() {
           <CreateListingForm />
           <ActiveListings />
         </div>
+
+        {/* Incoming requests from NGOs */}
+        <IncomingRequests />
 
       </main>
     </div>
