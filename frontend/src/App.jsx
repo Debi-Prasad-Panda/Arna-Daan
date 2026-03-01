@@ -2,6 +2,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import DonorDashboard from './pages/DonorDashboard'
 import ReceiverFeed from './pages/ReceiverFeed'
+import VolunteerLogistics from './pages/VolunteerLogistics'
+import AdminPanel from './pages/AdminPanel'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
 
 // Placeholder pages (to be built out)
 const ComingSoon = ({ title }) => (
@@ -21,9 +25,10 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<DonorDashboard />} />
         <Route path="/feed" element={<ReceiverFeed />} />
-        <Route path="/login" element={<ComingSoon title="Login" />} />
-        <Route path="/signup" element={<ComingSoon title="Sign Up" />} />
-        <Route path="/admin" element={<ComingSoon title="Admin Panel" />} />
+        <Route path="/logistics" element={<VolunteerLogistics />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/admin" element={<AdminPanel />} />
       </Routes>
     </BrowserRouter>
   )
