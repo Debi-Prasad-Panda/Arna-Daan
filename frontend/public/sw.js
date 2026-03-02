@@ -1,7 +1,7 @@
-// Annadaan Service Worker — v1
+// Annadaan Service Worker — v2
 // Handles: offline fallback, cache-first static assets, network-first API calls
 
-const CACHE_NAME = 'annadaan-v1'
+const CACHE_NAME = 'annadaan-v2'
 const OFFLINE_URL = '/offline.html'
 
 // Static assets to pre-cache
@@ -31,7 +31,7 @@ self.addEventListener('activate', (event) => {
   )
 })
 
-// ── Fetch: stale-while-revalidate for pages, cache-first for assets ───────────
+// ── Fetch: network-first for navigation, cache-first for static assets ────────
 self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
@@ -41,10 +41,18 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== location.origin) return
   if (url.pathname.startsWith('/v1/')) return  // Appwrite API
 
+  // Navigation requests (page loads) → always go network-first
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).catch(() => caches.match(OFFLINE_URL) || caches.match('/'))
+    )
+    return
+  }
+
+  // Static assets → cache-first with background update
   event.respondWith(
     caches.match(request).then((cached) => {
       const fetchPromise = fetch(request).then((networkResponse) => {
-        // Cache successful responses for static assets
         if (networkResponse.ok && (
           request.destination === 'script' ||
           request.destination === 'style' ||
@@ -54,13 +62,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse.clone()))
         }
         return networkResponse
-      }).catch(() => {
-        // Offline fallback for navigation requests
-        if (request.mode === 'navigate') {
-          return caches.match(OFFLINE_URL)
-        }
-        return cached
-      })
+      }).catch(() => cached)
 
       return cached || fetchPromise
     })
