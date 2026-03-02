@@ -42,10 +42,22 @@ export default function CreateListingForm() {
       // 1. Upload image if one was selected
       let imageUrl = null
       if (imageFile && APPWRITE_CONFIG.bucketId && APPWRITE_CONFIG.bucketId !== 'YOUR_BUCKET_ID_HERE') {
-        setUploading(true)
-        const uploaded = await storage.createFile(APPWRITE_CONFIG.bucketId, ID.unique(), imageFile)
-        imageUrl = `${import.meta.env.VITE_APPWRITE_ENDPOINT}/storage/buckets/${APPWRITE_CONFIG.bucketId}/files/${uploaded.$id}/view?project=${import.meta.env.VITE_APPWRITE_PROJECT_ID}`
-        setUploading(false)
+        try {
+          setUploading(true)
+          const uploaded = await storage.createFile(APPWRITE_CONFIG.bucketId, ID.unique(), imageFile)
+          imageUrl = `${import.meta.env.VITE_APPWRITE_ENDPOINT}/storage/buckets/${APPWRITE_CONFIG.bucketId}/files/${uploaded.$id}/view?project=${import.meta.env.VITE_APPWRITE_PROJECT_ID}`
+        } catch (uploadErr) {
+          console.warn('Image upload failed:', uploadErr.message)
+          // If bucket doesn't exist or upload fails, continue without image
+          const msg = uploadErr.message || ''
+          if (msg.includes('not found') || msg.includes('storage')) {
+            setFormError('Image upload failed — storage bucket may not be set up. Posting without photo.')
+          } else {
+            setFormError(`Image upload failed: ${msg}. Posting without photo.`)
+          }
+        } finally {
+          setUploading(false)
+        }
       }
       // 2. Create listing document
       await createListing({

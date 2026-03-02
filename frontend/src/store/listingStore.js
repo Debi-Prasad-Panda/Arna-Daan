@@ -42,10 +42,7 @@ const useListingStore = create((set) => ({
                 databaseId,
                 listingsCollectionId,
                 ID.unique(),
-                {
-                    ...listingData,
-                    createdAt: new Date().toISOString()
-                }
+                { ...listingData }
             );
 
             // Update local state without re-fetching

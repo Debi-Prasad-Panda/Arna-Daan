@@ -1,5 +1,5 @@
 import process from 'process';
-import { Client, Databases, Permission, Role, ID } from 'node-appwrite';
+import { Client, Databases, Storage, Permission, Role, ID } from 'node-appwrite';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -23,6 +23,7 @@ const client = new Client()
     .setKey(API_KEY);
 
 const databases = new Databases(client);
+const storageClient = new Storage(client);
 
 // Helper function to wait for attribute creation
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -61,6 +62,7 @@ async function setupDatabase() {
     await databases.createStringAttribute(db.$id, listingsCol.$id, 'status', 255, false, 'Active');
     await databases.createStringAttribute(db.$id, listingsCol.$id, 'donorId', 255, true);
     await databases.createStringAttribute(db.$id, listingsCol.$id, 'donorName', 255, true);
+    await databases.createStringAttribute(db.$id, listingsCol.$id, 'imageUrl', 2048, false);
     await sleep(2500); // Wait for attributes to deploy
 
     // ==========================================
@@ -94,7 +96,27 @@ async function setupDatabase() {
     await sleep(2500); // Wait for attributes to deploy
 
     // ==========================================
-    // 5. Output .env Config
+    // 5. Setup Storage Bucket
+    // ==========================================
+    console.log(`\n📦 Creating Storage Bucket for food images...`);
+    const bucket = await storageClient.createBucket(
+      ID.unique(),
+      'FoodImages',
+      [
+        Permission.read(Role.any()),
+        Permission.create(Role.users()),
+        Permission.update(Role.users()),
+        Permission.delete(Role.users()),
+      ],
+      false,  // fileSecurity
+      true,   // enabled
+      5242880, // 5MB max file size
+      ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    );
+    console.log(`✅ Storage Bucket ID: ${bucket.$id}`);
+
+    // ==========================================
+    // 6. Output .env Config
     // ==========================================
     console.log(`\n🎉 SETUP COMPLETE! 🎉`);
     console.log(`\n==============================================`);
@@ -107,6 +129,7 @@ async function setupDatabase() {
     console.log(`VITE_APPWRITE_LISTINGS_COLLECTION_ID="${listingsCol.$id}"`);
     console.log(`VITE_APPWRITE_REQUESTS_COLLECTION_ID="${requestsCol.$id}"`);
     console.log(`VITE_APPWRITE_DELIVERIES_COLLECTION_ID="${deliveriesCol.$id}"`);
+    console.log(`VITE_APPWRITE_BUCKET_ID="${bucket.$id}"`);
     console.log(`==============================================\n`);
 
   } catch (error) {

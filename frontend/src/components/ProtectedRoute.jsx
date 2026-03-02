@@ -6,13 +6,13 @@ import useAuthStore, { getHomeRoute } from '../store/authStore'
  * Any route NOT listed here is accessible by ALL authenticated users.
  */
 const ROLE_RULES = {
-  // Donor only
-  '/dashboard':       ['donor'],
-  // NGO / Receiver only
-  '/feed':            ['ngo'],
-  '/claims':          ['ngo'],
-  // Volunteer only
-  '/logistics':       ['volunteer'],
+  // Donor (+ admin can view)
+  '/dashboard':       ['donor', 'admin'],
+  // NGO / Receiver (+ admin can view)
+  '/feed':            ['ngo', 'admin'],
+  '/claims':          ['ngo', 'admin'],
+  // Volunteer (+ admin can view)
+  '/logistics':       ['volunteer', 'admin'],
   // Admin only
   '/admin':           ['admin'],
   '/admin/analytics': ['admin'],

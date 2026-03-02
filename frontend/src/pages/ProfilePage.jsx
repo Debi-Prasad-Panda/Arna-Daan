@@ -34,10 +34,11 @@ function ProfileNav() {
 
 export default function ProfilePage() {
   const { user, role } = useAuthStore()
-  const [name, setName]         = useState(user?.name || '')
-  const [oldPwd, setOldPwd]     = useState('')
-  const [newPwd, setNewPwd]     = useState('')
-  const [saving, setSaving]     = useState(false)
+  const [name, setName]             = useState(user?.name || '')
+  const [oldPwd, setOldPwd]         = useState('')
+  const [newPwd, setNewPwd]         = useState('')
+  const [saving, setSaving]         = useState(false)
+  const [selectedRole, setSelectedRole] = useState(role ?? 'donor')
 
   const { listings, fetchListings }     = useListingStore()
   const { deliveries, fetchDeliveries } = useDeliveryStore()
@@ -55,17 +56,16 @@ export default function ProfilePage() {
     if (!name.trim()) { toast.error('Name cannot be empty'); return }
     setSaving(true)
     try {
-      // Update display name in Appwrite
-      if (name !== user?.name) {
-        await account.updateName(name)
-      }
-      // Update password if provided
+      if (name !== user?.name) await account.updateName(name)
       if (newPwd && oldPwd) {
         await account.updatePassword(newPwd, oldPwd)
         setOldPwd(''); setNewPwd('')
         toast.success('Password updated!')
       }
-      // Refresh user in auth store
+      // Update role if changed and not admin
+      if (selectedRole !== role && role !== 'admin') {
+        await account.updatePrefs({ role: selectedRole })
+      }
       await useAuthStore.getState().checkAuth()
       toast.success('Profile saved!')
     } catch (e) {
@@ -184,12 +184,45 @@ export default function ProfilePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#bca39a] mb-2">Role</label>
-            <div className={`flex items-center gap-3 ${meta.bg} border border-[#3a2c27] rounded-xl px-4 py-3`}>
-              <span className={`material-symbols-outlined ${meta.color}`}>{meta.icon}</span>
-              <span className={`font-bold ${meta.color}`}>{meta.label}</span>
-              <span className="ml-auto text-xs text-[#bca39a]">Contact admin to change</span>
-            </div>
+            <label className="block text-sm font-bold text-[#bca39a] mb-3">Role</label>
+            {role === 'admin' ? (
+              // Admin: read-only
+              <div className={`flex items-center gap-3 ${meta.bg} border border-[#3a2c27] rounded-xl px-4 py-3`}>
+                <span className={`material-symbols-outlined ${meta.color}`}>{meta.icon}</span>
+                <span className={`font-bold ${meta.color}`}>{meta.label}</span>
+                <span className="ml-auto text-xs text-[#bca39a]">Admin role is permanent</span>
+              </div>
+            ) : (
+              // Non-admin: switchable between donor / ngo / volunteer
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { id: 'donor',     icon: 'restaurant',    label: 'Donor',     color: 'text-primary',    bg: 'bg-primary/15',     border: 'border-primary' },
+                  { id: 'ngo',       icon: 'groups',        label: 'NGO',       color: 'text-blue-400',   bg: 'bg-blue-400/15',    border: 'border-blue-400' },
+                  { id: 'volunteer', icon: 'local_shipping', label: 'Volunteer', color: 'text-green-400',  bg: 'bg-green-400/15',   border: 'border-green-400' },
+                ].map(r => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => setSelectedRole(r.id)}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
+                      selectedRole === r.id
+                        ? `${r.bg} ${r.border}`
+                        : 'border-[#3a2c27] bg-[#181210] hover:border-[#5a433a]'
+                    }`}
+                  >
+                    <span className={`material-symbols-outlined text-2xl ${selectedRole === r.id ? r.color : 'text-[#bca39a]'}`}>{r.icon}</span>
+                    <span className={`text-xs font-bold ${selectedRole === r.id ? r.color : 'text-[#bca39a]'}`}>{r.label}</span>
+                    {selectedRole === r.id && <span className="material-symbols-outlined text-[14px] text-current">check_circle</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+            {role !== 'admin' && selectedRole !== role && (
+              <p className="text-xs text-yellow-400 mt-2 flex items-center gap-1">
+                <span className="material-symbols-outlined text-[14px]">info</span>
+                Role change will take effect after saving and re-login.
+              </p>
+            )}
           </div>
 
           <button

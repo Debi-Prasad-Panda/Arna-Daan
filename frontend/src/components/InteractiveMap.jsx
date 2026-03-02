@@ -116,6 +116,10 @@ export default function InteractiveMap() {
   const [simSpeed, setSimSpeed]         = useState(0);
   const simRef = useRef(null);
 
+  // Vehicle-to-pickup approach route
+  const [approachRoute, setApproachRoute] = useState([]);
+  const approachAbort = useRef(null);
+
   // ----- Fetch real deliveries from Appwrite on mount -----
   useEffect(() => {
     if (user) fetchDeliveries(user.$id).catch(() => {});
@@ -145,7 +149,10 @@ export default function InteractiveMap() {
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setRouteLoading(true);
-    setRoutePositions([[pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]]);
+    // Clear previous route — do NOT set a straight line here
+    setRoutePositions([]);
+    setRouteDistance(null);
+    setRouteDuration(null);
 
     const url =
       `https://router.project-osrm.org/route/v1/driving/` +
@@ -158,13 +165,20 @@ export default function InteractiveMap() {
         const route = data?.routes?.[0];
         if (route?.geometry?.coordinates?.length > 0) {
           setRoutePositions(route.geometry.coordinates.map(([lng, lat]) => [lat, lng]));
+        } else {
+          // OSRM returned no geometry — fall back to straight line
+          setRoutePositions([[pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]]);
         }
         setRouteDistance(route?.distance ?? null);
         setRouteDuration(route?.duration ?? null);
         setRouteLoading(false);
       })
       .catch(err => {
-        if (err.name !== 'AbortError') console.warn('OSRM failed:', err.message);
+        if (err.name !== 'AbortError') {
+          console.warn('OSRM failed, using straight line:', err.message);
+          // Fall back to straight line on network error
+          setRoutePositions([[pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]]);
+        }
         setRouteLoading(false);
       });
 
@@ -216,7 +230,45 @@ export default function InteractiveMap() {
   useEffect(() => () => {
     if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current);
     clearInterval(simRef.current);
+    if (approachAbort.current) approachAbort.current.abort();
   }, []);
+
+  // ----- Fetch approach route (vehicle → pickup) when tracking -----
+  useEffect(() => {
+    if (!tracking || !trackerPos) {
+      setApproachRoute([]);
+      return;
+    }
+    const { pickup } = activeRoute;
+    if (!pickup?.lat) return;
+
+    if (approachAbort.current) approachAbort.current.abort();
+    const controller = new AbortController();
+    approachAbort.current = controller;
+
+    const url =
+      `https://router.project-osrm.org/route/v1/driving/` +
+      `${trackerPos[1]},${trackerPos[0]};${pickup.lng},${pickup.lat}` +
+      `?overview=full&geometries=geojson`;
+
+    fetch(url, { signal: controller.signal })
+      .then(r => r.json())
+      .then(data => {
+        const route = data?.routes?.[0];
+        if (route?.geometry?.coordinates?.length > 0) {
+          setApproachRoute(route.geometry.coordinates.map(([lng, lat]) => [lat, lng]));
+        } else {
+          setApproachRoute([trackerPos, [pickup.lat, pickup.lng]]);
+        }
+      })
+      .catch(err => {
+        if (err.name !== 'AbortError') {
+          setApproachRoute([trackerPos, [pickup.lat, pickup.lng]]);
+        }
+      });
+
+    return () => controller.abort();
+  }, [tracking, trackerPos, activeRoute]);
 
   // ----- One-shot "Locate Me" -----
   const [locating, setLocating] = useState(false);
@@ -252,7 +304,7 @@ export default function InteractiveMap() {
   const distKm = routeDistance ? (routeDistance / 1000).toFixed(1) : null;
 
   return (
-    <div className="relative w-full md:w-2/3 h-1/2 md:h-full bg-[#181210] border-b md:border-b-0 md:border-r border-[#3a2c27]">
+    <div className="relative w-full h-full bg-[#181210]">
 
       {/* ── Pulse keyframe ── */}
       <style>{`
@@ -281,9 +333,17 @@ export default function InteractiveMap() {
           />
           <MapController flyTarget={flyTarget} zoomCmd={zoomCmd} />
 
-          {/* Road-following route */}
+          {/* Pickup → Dropoff route */}
           {routePositions.length >= 2 && (
             <Polyline positions={routePositions} pathOptions={polylineOpts} />
+          )}
+
+          {/* Vehicle → Pickup approach route (dashed blue) */}
+          {approachRoute.length >= 2 && (
+            <Polyline
+              positions={approachRoute}
+              pathOptions={{ color: '#38bdf8', weight: 4, opacity: 0.8, dashArray: '10, 8', lineCap: 'round' }}
+            />
           )}
 
           {/* Pickup marker */}

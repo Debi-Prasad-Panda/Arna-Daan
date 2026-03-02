@@ -20,7 +20,7 @@ export default function DashboardTopNav() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const user   = useAuthStore(state => state.user)
-  const role   = useAuthStore(state => state.role) || 'donor'
+  const role   = useAuthStore(state => state.role) ?? 'donor'
   const logout = useAuthStore(state => state.logout)
   const [open, setOpen] = useState(false)
 
@@ -52,10 +52,12 @@ export default function DashboardTopNav() {
 
         {/* Actions */}
         <div className="flex items-center gap-2 md:gap-4">
-          <Link to="/dashboard" className="hidden md:flex items-center justify-center h-10 px-5 rounded-xl bg-primary hover:bg-orange-700 text-white text-sm font-bold transition-all shadow-lg shadow-primary/20">
-            <span className="mr-2 material-symbols-outlined text-[18px]">add_circle</span>
-            New Donation
-          </Link>
+          {role === 'donor' && (
+            <Link to="/dashboard" className="hidden md:flex items-center justify-center h-10 px-5 rounded-xl bg-primary hover:bg-orange-700 text-white text-sm font-bold transition-all shadow-lg shadow-primary/20">
+              <span className="mr-2 material-symbols-outlined text-[18px]">add_circle</span>
+              New Donation
+            </Link>
+          )}
 
           <div className="hidden sm:flex flex-col items-end">
             <span className="text-sm font-bold text-white leading-tight">{user?.name?.split(' ')[0] || roleLabel}</span>
@@ -94,11 +96,13 @@ export default function DashboardTopNav() {
               {item.label}
             </Link>
           ))}
-          <Link to="/dashboard" onClick={() => setOpen(false)}
-            className="mt-2 flex items-center justify-center gap-2 py-3 bg-primary rounded-xl text-white text-sm font-bold">
-            <span className="material-symbols-outlined text-[18px]">add_circle</span>
-            New Donation
-          </Link>
+          {role === 'donor' && (
+            <Link to="/dashboard" onClick={() => setOpen(false)}
+              className="mt-2 flex items-center justify-center gap-2 py-3 bg-primary rounded-xl text-white text-sm font-bold">
+              <span className="material-symbols-outlined text-[18px]">add_circle</span>
+              New Donation
+            </Link>
+          )}
           <button onClick={handleLogout} className="mt-1 flex items-center justify-center gap-2 py-3 text-red-400 text-sm font-medium rounded-xl hover:bg-[#3a2c27] transition-colors">
             <span className="material-symbols-outlined text-[18px]">logout</span>
             Logout
