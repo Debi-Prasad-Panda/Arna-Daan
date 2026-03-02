@@ -87,6 +87,132 @@ function fmtSpeed(mps) {
   return Math.round(mps * 3.6).toFixed(0); // convert to km/h
 }
 
+// ----- Mobile-friendly Delivery Card (collapsed pill on mobile, full on desktop) -----
+function MobileDeliveryCard({ isLoading, activeRoute, distKm, routeDuration, displaySpeed, tracking, startTracking, stopTracking, fmtDur }) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (isLoading) {
+    return (
+      <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-auto md:w-80 bg-[#281e1b]/95 backdrop-blur-md p-3 md:p-4 rounded-xl shadow-2xl border border-[#3a2c27] z-10">
+        <div className="flex items-center gap-2 text-[#bca39a] text-sm animate-pulse">
+          <span className="material-symbols-outlined text-sm">sync</span> Loading live mission…
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-auto md:w-80 z-10">
+      {/* ── Mobile: Compact pill (tap to expand) ── */}
+      <div
+        className={`md:hidden bg-[#281e1b]/95 backdrop-blur-md rounded-xl shadow-2xl border border-[#3a2c27] transition-all duration-300 overflow-hidden ${expanded ? 'p-4' : 'p-3 cursor-pointer'}`}
+        onClick={() => !expanded && setExpanded(true)}
+      >
+        {!expanded ? (
+          /* Collapsed: slim one-liner */
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/20 p-1.5 rounded-lg text-primary shrink-0">
+              <span className="material-symbols-outlined text-[18px]">local_shipping</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white text-xs font-bold truncate">{activeRoute.pickup.name} ➔ {activeRoute.dropoff.name}</p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {distKm && <span className="text-orange-400 text-xs font-bold">{distKm} km</span>}
+              <span className="material-symbols-outlined text-[#bca39a] text-[16px]">expand_less</span>
+            </div>
+          </div>
+        ) : (
+          /* Expanded: full card with collapse button */
+          <>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/20 p-2 rounded-lg text-primary shrink-0">
+                  <span className="material-symbols-outlined">local_shipping</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold text-sm">Active Delivery</h4>
+                  <p className="text-[#bca39a] text-xs truncate">{activeRoute.pickup.name} ➔ {activeRoute.dropoff.name}</p>
+                </div>
+              </div>
+              <button onClick={(e) => { e.stopPropagation(); setExpanded(false); }} className="text-[#bca39a] hover:text-white p-1">
+                <span className="material-symbols-outlined text-[18px]">expand_more</span>
+              </button>
+            </div>
+            <DeliveryCardBody {...{ activeRoute, distKm, routeDuration, displaySpeed, tracking, startTracking, stopTracking, fmtDur }} />
+          </>
+        )}
+      </div>
+
+      {/* ── Desktop: Always full card ── */}
+      <div className="hidden md:block bg-[#281e1b]/95 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-[#3a2c27]">
+        <div className="flex items-start gap-3 mb-3">
+          <div className="bg-primary/20 p-2 rounded-lg text-primary shrink-0">
+            <span className="material-symbols-outlined">local_shipping</span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 mb-0.5">
+              <h4 className="text-white font-bold text-sm">Active Delivery</h4>
+              {activeRoute.status && (
+                <span className="bg-orange-500/15 text-orange-400 text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase">
+                  {activeRoute.status}
+                </span>
+              )}
+            </div>
+            <p className="text-[#bca39a] text-xs truncate">{activeRoute.pickup.name} ➔ {activeRoute.dropoff.name}</p>
+          </div>
+        </div>
+        <DeliveryCardBody {...{ activeRoute, distKm, routeDuration, displaySpeed, tracking, startTracking, stopTracking, fmtDur }} />
+      </div>
+    </div>
+  );
+}
+
+// Shared card body (stats + tracking button + pickup code)
+function DeliveryCardBody({ activeRoute, distKm, routeDuration, displaySpeed, tracking, startTracking, stopTracking, fmtDur }) {
+  return (
+    <>
+      <div className="grid grid-cols-3 gap-2">
+        <div className="bg-[#3a2c27] rounded-lg p-2 text-center">
+          <p className="text-white font-black text-sm">{distKm ?? '…'}</p>
+          <p className="text-[#bca39a] text-[10px] uppercase tracking-wide font-medium mt-0.5">km</p>
+        </div>
+        <div className="bg-[#3a2c27] rounded-lg p-2 text-center">
+          <p className="text-white font-black text-sm">{fmtDur(routeDuration)}</p>
+          <p className="text-[#bca39a] text-[10px] uppercase tracking-wide font-medium mt-0.5">ETA</p>
+        </div>
+        <div className={`rounded-lg p-2 text-center ${tracking ? 'bg-orange-500/10 border border-orange-500/30' : 'bg-[#3a2c27]'}`}>
+          <p className={`font-black text-sm ${tracking ? 'text-orange-400' : 'text-white'}`}>{displaySpeed}</p>
+          <p className={`text-[10px] uppercase tracking-wide font-medium mt-0.5 ${tracking ? 'text-orange-400' : 'text-[#bca39a]'}`}>km/h</p>
+        </div>
+      </div>
+      {!tracking ? (
+        <button onClick={startTracking} className="mt-3 w-full flex items-center justify-center gap-2 bg-primary hover:bg-orange-700 text-white font-bold text-xs py-2 rounded-lg transition-all">
+          <span className="material-symbols-outlined text-[16px]">radio_button_checked</span>
+          Start Live Tracking
+        </button>
+      ) : (
+        <div className="mt-3 flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 rounded-lg px-3 py-2">
+            <span className="size-2 rounded-full bg-orange-500 animate-pulse" />
+            <span className="text-orange-400 text-xs font-bold">LIVE</span>
+            <span className="text-[#bca39a] text-xs ml-1">Tracking active</span>
+          </div>
+          <button onClick={stopTracking} className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-colors">
+            <span className="material-symbols-outlined text-[16px]">stop</span>
+          </button>
+        </div>
+      )}
+      {activeRoute.pickupCode && (
+        <div className="mt-2 flex items-center gap-2">
+          <span className="text-[#bca39a] text-xs">Pickup PIN:</span>
+          <span className="ml-auto bg-[#3a2c27] text-[#bca39a] font-mono text-xs px-2 py-0.5 rounded font-bold">{activeRoute.pickupCode}</span>
+        </div>
+      )}
+    </>
+  );
+}
+
 // ----- Main Component -----
 export default function InteractiveMap() {
   const { deliveries, fetchDeliveries, isLoading } = useDeliveryStore();
@@ -466,80 +592,18 @@ export default function InteractiveMap() {
       </div>
 
       {/* ── Active Delivery Card ── */}
-      <div className="absolute bottom-8 left-4 right-4 md:left-8 md:right-auto md:w-80 bg-[#281e1b]/95 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-[#3a2c27] z-10">
-        {isLoading ? (
-          <div className="flex items-center gap-2 text-[#bca39a] text-sm animate-pulse">
-            <span className="material-symbols-outlined text-sm">sync</span> Loading live mission…
-          </div>
-        ) : (
-          <>
-            <div className="flex items-start gap-3 mb-3">
-              <div className="bg-primary/20 p-2 rounded-lg text-primary shrink-0">
-                <span className="material-symbols-outlined">local_shipping</span>
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <h4 className="text-white font-bold text-sm">Active Delivery</h4>
-                  {activeRoute.status && (
-                    <span className="bg-orange-500/15 text-orange-400 text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase">
-                      {activeRoute.status}
-                    </span>
-                  )}
-                </div>
-                <p className="text-[#bca39a] text-xs truncate">{activeRoute.pickup.name} ➔ {activeRoute.dropoff.name}</p>
-              </div>
-            </div>
-
-            {/* Stats row */}
-            <div className="grid grid-cols-3 gap-2">
-              <div className="bg-[#3a2c27] rounded-lg p-2 text-center">
-                <p className="text-white font-black text-sm">{distKm ?? '…'}</p>
-                <p className="text-[#bca39a] text-[10px] uppercase tracking-wide font-medium mt-0.5">km</p>
-              </div>
-              <div className="bg-[#3a2c27] rounded-lg p-2 text-center">
-                <p className="text-white font-black text-sm">{fmtDur(routeDuration)}</p>
-                <p className="text-[#bca39a] text-[10px] uppercase tracking-wide font-medium mt-0.5">ETA</p>
-              </div>
-              <div className={`rounded-lg p-2 text-center ${tracking ? 'bg-orange-500/10 border border-orange-500/30' : 'bg-[#3a2c27]'}`}>
-                <p className={`font-black text-sm ${tracking ? 'text-orange-400' : 'text-white'}`}>{displaySpeed}</p>
-                <p className={`text-[10px] uppercase tracking-wide font-medium mt-0.5 ${tracking ? 'text-orange-400' : 'text-[#bca39a]'}`}>km/h</p>
-              </div>
-            </div>
-
-            {/* Tracking CTA */}
-            {!tracking ? (
-              <button
-                onClick={startTracking}
-                className="mt-3 w-full flex items-center justify-center gap-2 bg-primary hover:bg-orange-700 text-white font-bold text-xs py-2 rounded-lg transition-all"
-              >
-                <span className="material-symbols-outlined text-[16px]">radio_button_checked</span>
-                Start Live Tracking
-              </button>
-            ) : (
-              <div className="mt-3 flex items-center gap-2">
-                <div className="flex-1 flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 rounded-lg px-3 py-2">
-                  <span className="size-2 rounded-full bg-orange-500 animate-pulse" />
-                  <span className="text-orange-400 text-xs font-bold">LIVE</span>
-                  <span className="text-[#bca39a] text-xs ml-1">Tracking active</span>
-                </div>
-                <button
-                  onClick={stopTracking}
-                  className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-[16px]">stop</span>
-                </button>
-              </div>
-            )}
-
-            {activeRoute.pickupCode && (
-              <div className="mt-2 flex items-center gap-2">
-                <span className="text-[#bca39a] text-xs">Pickup PIN:</span>
-                <span className="ml-auto bg-[#3a2c27] text-[#bca39a] font-mono text-xs px-2 py-0.5 rounded font-bold">{activeRoute.pickupCode}</span>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      {/* On mobile: compact pill, tap to expand. On desktop: always full card */}
+      <MobileDeliveryCard
+        isLoading={isLoading}
+        activeRoute={activeRoute}
+        distKm={distKm}
+        routeDuration={routeDuration}
+        displaySpeed={displaySpeed}
+        tracking={tracking}
+        startTracking={startTracking}
+        stopTracking={stopTracking}
+        fmtDur={fmtDur}
+      />
     </div>
   );
 }
