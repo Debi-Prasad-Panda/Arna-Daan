@@ -104,8 +104,8 @@ export default function CommunityPage() {
   // Live Appwrite data for the stat strip
   const { listings, fetchListings }     = useListingStore()
   const { deliveries, fetchDeliveries } = useDeliveryStore()
-  const { requests, fetchRequests }     = useRequestStore()
-  useEffect(() => { fetchListings(); fetchDeliveries(); fetchRequests() }, [])
+  const { fetchRequests }               = useRequestStore()
+  useEffect(() => { fetchListings(); fetchDeliveries(); fetchRequests() }, [fetchListings, fetchDeliveries, fetchRequests])
 
   const totalMeals      = listings.reduce((s, l) => s + (Number(l.quantity) || 0), 0)
   const peopleFed       = Math.round(totalMeals * 0.9)

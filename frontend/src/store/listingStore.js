@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { databases, APPWRITE_CONFIG } from '../lib/appwrite';
 import { ID, Query } from 'appwrite';
 
-const useListingStore = create((set, get) => ({
+const useListingStore = create((set) => ({
     listings: [],
     isLoading: false,
     error: null,

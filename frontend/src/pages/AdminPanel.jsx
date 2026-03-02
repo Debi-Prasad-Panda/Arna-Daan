@@ -16,9 +16,10 @@ function NotificationBell() {
     try { return new Set(JSON.parse(localStorage.getItem('admin_seen_notifs') || '[]')) }
     catch { return new Set() }
   })
+  const [now] = useState(() => Date.now())
 
-  useEffect(() => { fetchRequests(); fetchListings() }, [])
-  const refresh = useCallback(() => { fetchRequests(); fetchListings() }, [])
+  useEffect(() => { fetchRequests(); fetchListings() }, [fetchRequests, fetchListings])
+  const refresh = useCallback(() => { fetchRequests(); fetchListings() }, [fetchRequests, fetchListings])
   useRealtime(APPWRITE_CONFIG.requestsCollectionId, refresh)
   useRealtime(APPWRITE_CONFIG.listingsCollectionId, refresh)
 
@@ -49,7 +50,7 @@ function NotificationBell() {
 
   const timeAgo = (t) => {
     if (!t) return ''
-    const diff = (Date.now() - new Date(t)) / 60000
+    const diff = (now - new Date(t)) / 60000
     if (diff < 1)    return 'just now'
     if (diff < 60)   return `${Math.round(diff)}m ago`
     if (diff < 1440) return `${Math.round(diff / 60)}h ago`

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import ReceiverTopNav from '../components/ReceiverTopNav'
 import useRequestStore from '../store/requestStore'
 import useListingStore from '../store/listingStore'
@@ -59,13 +59,14 @@ function StatusStepper({ status }) {
 }
 
 function ClaimCard({ request, listing }) {
+  const [now] = useState(() => Date.now())
   const meta = STATUS_META[request.status] || STATUS_META.Pending
   const diet = listing?.diet?.toUpperCase()
   const dietCls = DIET_COLOR[diet] || 'bg-[#3a2c27] text-[#bca39a]'
 
   const timeAgo = request.$createdAt
     ? (() => {
-        const diff = (Date.now() - new Date(request.$createdAt)) / 60000
+        const diff = (now - new Date(request.$createdAt)) / 60000
         if (diff < 1)    return 'just now'
         if (diff < 60)   return `${Math.round(diff)}m ago`
         if (diff < 1440) return `${Math.round(diff / 60)}h ago`
@@ -130,9 +131,9 @@ export default function MyClaimsPage() {
   const { requests, isLoading, fetchRequests } = useRequestStore()
   const { listings, fetchListings }             = useListingStore()
 
-  useEffect(() => { fetchRequests(); fetchListings() }, [])
+  useEffect(() => { fetchRequests(); fetchListings() }, [fetchRequests, fetchListings])
 
-  const handleRefresh = useCallback(() => { fetchRequests(); fetchListings() }, [])
+  const handleRefresh = useCallback(() => { fetchRequests(); fetchListings() }, [fetchRequests, fetchListings])
   useRealtime(APPWRITE_CONFIG.requestsCollectionId, handleRefresh)
 
   // This user's requests

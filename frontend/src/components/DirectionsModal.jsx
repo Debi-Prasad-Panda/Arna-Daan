@@ -113,7 +113,7 @@ export default function DirectionsModal({ listing, onClose }) {
     }
     run()
     return () => { abortRef.current = true }
-  }, [])
+  }, [listing.address, listing.donorName, listing.title])
 
   // Close on Escape
   useEffect(() => {

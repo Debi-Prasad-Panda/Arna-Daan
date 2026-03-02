@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, lazy, Suspense } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import useListingStore from '../store/listingStore'
 import useRequestStore from '../store/requestStore'
 import { useRealtime } from '../hooks/useRealtime'
@@ -232,12 +232,12 @@ export default function FeedGrid({ activeFilter = 'all', urgentOnly = false }) {
 
   useEffect(() => {
     fetchListings()
-  }, [])
+  }, [fetchListings])
 
   // 🔴 Realtime: re-fetch whenever any listing is created, updated, or deleted
   const handleListingEvent = useCallback(() => {
     fetchListings()
-  }, [])
+  }, [fetchListings])
   useRealtime(APPWRITE_CONFIG.listingsCollectionId, handleListingEvent)
 
   // ── Filter logic ─────────────────────────────────────────────────────────────

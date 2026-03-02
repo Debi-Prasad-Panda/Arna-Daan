@@ -77,7 +77,7 @@ export default function AdminAnalytics() {
   useEffect(() => {
     Promise.all([fetchListings(), fetchRequests(), fetchDeliveries()])
       .finally(() => setLoaded(true))
-  }, [])
+  }, [fetchListings, fetchRequests, fetchDeliveries])
 
   // Derived metrics
   const totalMeals     = listings.reduce((s, l) => s + (Number(l.quantity) || 0), 0)
@@ -175,7 +175,7 @@ export default function AdminAnalytics() {
             <div className="bg-[#2f1d17] border border-[#4a352f] rounded-2xl p-6">
               <h3 className="text-white font-bold text-sm mb-5">Listings by Food Category</h3>
               <div className="flex flex-col gap-3">
-                {categoryData.map((cat, i) => {
+                {categoryData.map((cat) => {
                   const maxVal = categoryData[0]?.value || 1
                   return (
                     <div key={cat.label} className="flex items-center gap-3">

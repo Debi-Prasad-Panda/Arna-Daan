@@ -1,5 +1,5 @@
+import process from 'process';
 import { Client, Databases, Permission, Role, ID } from 'node-appwrite';
-import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 

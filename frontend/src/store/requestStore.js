@@ -3,7 +3,7 @@ import { APPWRITE_CONFIG, databases } from '../lib/appwrite';
 import { ID, Query } from 'appwrite';
 import useAuthStore from './authStore';
 
-const useRequestStore = create((set, get) => ({
+const useRequestStore = create((set) => ({
   requests: [],
   isLoading: false,
   error: null,

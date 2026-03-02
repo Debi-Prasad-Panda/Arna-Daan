@@ -23,7 +23,7 @@ const useAuthStore = create((set) => ({
             const currentUser = await account.get();
             const role = currentUser.prefs?.role || 'donor';
             set({ user: currentUser, role, isLoading: false });
-        } catch (error) {
+        } catch {
             set({ user: null, role: null, isLoading: false });
         }
     },

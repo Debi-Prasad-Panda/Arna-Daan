@@ -2,19 +2,30 @@ import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
 
-const navItems = [
-  { label: 'Dashboard', href: '/dashboard', icon: 'dashboard' },
-  { label: 'Feed',      href: '/feed',      icon: 'list_alt' },
-  { label: 'Volunteer', href: '/logistics', icon: 'local_shipping' },
-]
+const NAV_BY_ROLE = {
+  donor:     [{ label: 'Dashboard', href: '/dashboard', icon: 'dashboard' }],
+  ngo:       [{ label: 'Dashboard', href: '/feed',      icon: 'dashboard' }, { label: 'Feed', href: '/feed', icon: 'list_alt' }],
+  volunteer: [{ label: 'Dashboard', href: '/logistics', icon: 'dashboard' }, { label: 'Volunteer', href: '/logistics', icon: 'local_shipping' }],
+  admin:     [
+    { label: 'Dashboard', href: '/dashboard', icon: 'dashboard' },
+    { label: 'Feed',      href: '/feed',      icon: 'list_alt' },
+    { label: 'Volunteer', href: '/logistics', icon: 'local_shipping' },
+    { label: 'Admin',     href: '/admin',     icon: 'admin_panel_settings' },
+  ],
+}
+
+const ROLE_LABEL = { donor: 'Donor', ngo: 'NGO', volunteer: 'Volunteer', admin: 'Admin' }
 
 export default function DashboardTopNav() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const user   = useAuthStore(state => state.user)
+  const role   = useAuthStore(state => state.role) || 'donor'
   const logout = useAuthStore(state => state.logout)
   const [open, setOpen] = useState(false)
 
+  const navItems = NAV_BY_ROLE[role] ?? NAV_BY_ROLE.donor
+  const roleLabel = ROLE_LABEL[role] ?? 'User'
   const handleLogout = async () => { await logout(); navigate('/login') }
 
   return (
@@ -47,8 +58,8 @@ export default function DashboardTopNav() {
           </Link>
 
           <div className="hidden sm:flex flex-col items-end">
-            <span className="text-sm font-bold text-white leading-tight">{user?.name?.split(' ')[0] || 'Donor'}</span>
-            <span className="text-xs text-[#bca39a] uppercase tracking-wider font-semibold">Donor</span>
+            <span className="text-sm font-bold text-white leading-tight">{user?.name?.split(' ')[0] || roleLabel}</span>
+            <span className="text-xs text-[#bca39a] uppercase tracking-wider font-semibold">{roleLabel}</span>
           </div>
 
           <div className="relative group cursor-pointer">

@@ -73,7 +73,9 @@ self.addEventListener('push', (event) => {
 
   try {
     if (event.data) data = { ...data, ...event.data.json() }
-  } catch (_) {}
+  } catch (error) {
+    console.error('Push event data parsing failed', error)
+  }
 
   event.waitUntil(
     self.registration.showNotification(data.title, {
@@ -100,13 +102,13 @@ self.addEventListener('notificationclick', (event) => {
   const targetUrl = event.notification.data?.url || '/'
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
         if (client.url === targetUrl && 'focus' in client) {
           return client.focus()
         }
       }
-      return clients.openWindow(targetUrl)
+      return self.clients.openWindow(targetUrl)
     })
   )
 })

@@ -74,10 +74,7 @@ const DEMO_ROUTE = {
 const DEFAULT_CENTER = [20.2910, 85.8300];
 
 // ----- Helpers -----
-function fmtDist(meters) {
-  if (!meters) return '—';
-  return meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${Math.round(meters)} m`;
-}
+
 function fmtDur(seconds) {
   if (!seconds) return '—';
   const m = Math.round(seconds / 60);
@@ -122,12 +119,13 @@ export default function InteractiveMap() {
   // ----- Fetch real deliveries from Appwrite on mount -----
   useEffect(() => {
     if (user) fetchDeliveries(user.$id).catch(() => {});
-  }, [user]);
+  }, [user, fetchDeliveries]);
 
   // Use the first live delivery from Appwrite if one exists
   useEffect(() => {
     if (deliveries?.length > 0) {
       const live = deliveries[0];
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveRoute({
         pickup:  { lat: 20.2961, lng: 85.8245, name: live.requestId ? `Pickup #${live.requestId.slice(-6)}` : DEMO_ROUTE.pickup.name, address: 'Live Pickup Location' },
         dropoff: { lat: 20.2858, lng: 85.8361, name: live.volunteerName ? `Delivery by ${live.volunteerName}` : DEMO_ROUTE.dropoff.name, address: 'Live Dropoff Location' },
@@ -145,6 +143,7 @@ export default function InteractiveMap() {
     const controller = new AbortController();
     routeAbort.current = controller;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRouteLoading(true);
     setRoutePositions([[pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]]);
 
@@ -173,6 +172,17 @@ export default function InteractiveMap() {
   }, [activeRoute]);
 
   // ----- Start / Stop live GPS tracking -----
+  const stopTracking = useCallback(() => {
+    if (watchId.current !== null) {
+      navigator.geolocation.clearWatch(watchId.current);
+      watchId.current = null;
+    }
+    clearInterval(simRef.current);
+    setTracking(false);
+    setSimSpeed(0);
+    toast('Tracking stopped.', { icon: '⏹' });
+  }, []);
+
   const startTracking = useCallback(() => {
     if (!navigator.geolocation) {
       toast.error('Geolocation not supported.'); return;
@@ -200,18 +210,7 @@ export default function InteractiveMap() {
       (err) => { toast.error(`Tracking error: ${err.message}`); stopTracking(); },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
-  }, []);
-
-  const stopTracking = useCallback(() => {
-    if (watchId.current !== null) {
-      navigator.geolocation.clearWatch(watchId.current);
-      watchId.current = null;
-    }
-    clearInterval(simRef.current);
-    setTracking(false);
-    setSimSpeed(0);
-    toast('Tracking stopped.', { icon: '⏹' });
-  }, []);
+  }, [stopTracking]);
 
   // Cleanup on unmount
   useEffect(() => () => {

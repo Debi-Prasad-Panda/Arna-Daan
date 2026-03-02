@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+// eslint-disable-next-line no-unused-vars
+import { motion, useScroll, useTransform } from 'framer-motion'
 
 const AVATAR_URLS = [
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAEgICIvlAIG2fQslNw49sEKEeFKTmnX1KpumGHggCGccPTw52A-UsqbP8ZCAjyEdxqtipj0TKTRagD4sI2l_omxkQmSgbiDX6JMvZGSb-4uxO0z_jgepKmvynDF2hC76i-REnYbAH0ISOEbSph4oeyza6dQYV9gBNu0CEBNnYuTcVUIBGK6jOe05irdyb_BilsviLK6krfHnWXzhZAfiY5ROTmgOnw8G5Sii4hYoTMuuIcHKf5DEBZ2abW8fxqCXwpnG0FxrWl2w',
@@ -8,38 +10,71 @@ const AVATAR_URLS = [
 
 const HERO_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAAxz70BvNEHdKk3FpGdjTtC_1DzPU2tJDrgEw1rVvtIrAmh3ahYifQhqrfxejP_-1_s91KVp3XfZfSUATVTedf1Feyb8Wp5akApzNwTvoLK-55frztEkmXqAAnk-HuCz28rFdPz2UZR-HxgzNKgs7AMqnmb97oPapBJsftS6f0O9By_g-XUPixz84oKLKfYkYTZhoq7df_tnh9lF_7cyqRvTkWV3FqQMCHi_7DYxGK5_63_RGrEwE9snExFQdOgj_1BDKjPoZWsQ'
 
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.1,
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, y: 0,
+    transition: { type: 'spring', stiffness: 50, damping: 15 }
+  }
+}
+
 export default function HeroSection() {
+  const { scrollY } = useScroll();
+  
+  // Parallax effects that move relative to scroll position
+  const yBg1 = useTransform(scrollY, [0, 1000], [0, 400]);
+  const yBg2 = useTransform(scrollY, [0, 1000], [0, 250]);
+  const yImageCard = useTransform(scrollY, [0, 1000], [0, 100]);
+  const yFloatingBadge = useTransform(scrollY, [0, 1000], [0, -100]);
+
   return (
     <section className="relative overflow-hidden py-20 lg:py-32">
-      {/* Background blobs */}
-      <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
-      <div className="absolute top-40 -right-40 h-[500px] w-[500px] rounded-full bg-secondary/10 blur-[120px] pointer-events-none" />
+      {/* Background blobs with parallax */}
+      <motion.div style={{ y: yBg1 }} className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
+      <motion.div style={{ y: yBg2 }} className="absolute top-40 -right-40 h-[500px] w-[500px] rounded-full bg-secondary/10 blur-[120px] pointer-events-none" />
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
 
           {/* Left: Text */}
-          <div className="flex flex-col gap-8 max-w-2xl">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col gap-8 max-w-2xl"
+          >
             {/* Live badge */}
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-sm">
+            <motion.div variants={itemVariants} className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">Live Food Rescue Network</span>
-            </div>
+            </motion.div>
 
-            <h1 className="text-5xl font-black leading-[1.1] tracking-tight text-white sm:text-6xl lg:text-7xl">
+            <motion.h1 variants={itemVariants} className="text-5xl font-black leading-[1.1] tracking-tight text-white sm:text-6xl lg:text-7xl">
               <span className="text-gradient">Bridge the Gap</span>{' '}
               Between Surplus and Scarcity
-            </h1>
+            </motion.h1>
 
-            <p className="text-lg leading-relaxed text-slate-400 max-w-lg">
+            <motion.p variants={itemVariants} className="text-lg leading-relaxed text-slate-400 max-w-lg">
               Connect surplus food from events and restaurants directly to communities in need. Join our mission to end hunger and reduce waste through technology.
-            </p>
+            </motion.p>
 
             {/* CTAs */}
-            <div className="flex flex-wrap gap-4 pt-2">
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-4 pt-2">
               <Link
                 to="/signup"
                 className="group relative flex h-14 items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r from-primary to-[#ff8c33] px-8 text-base font-bold text-white shadow-xl shadow-primary/25 transition-all hover:scale-[1.02] hover:shadow-primary/40"
@@ -54,10 +89,10 @@ export default function HeroSection() {
                 <span className="material-symbols-outlined">volunteer_activism</span>
                 <span>Volunteer Now</span>
               </Link>
-            </div>
+            </motion.div>
 
             {/* Social proof */}
-            <div className="flex items-center gap-4 text-sm text-slate-500">
+            <motion.div variants={itemVariants} className="flex items-center gap-4 text-sm text-slate-500">
               <div className="flex -space-x-3">
                 {AVATAR_URLS.map((url, i) => (
                   <div
@@ -71,12 +106,16 @@ export default function HeroSection() {
                 </div>
               </div>
               <p>Joined by 2,000+ changemakers</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          {/* Right: Hero image card */}
-          <div className="relative lg:h-[600px] w-full flex items-center justify-center">
-            <div className="relative z-10 w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-surface-dark/50">
+          {/* Right: Hero image card with parallax */}
+          <div className="relative lg:h-[600px] w-full flex items-center justify-center lg:mt-0 mt-10">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8, rotate: -5 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+              style={{ y: yImageCard }}
+              className="relative z-10 w-full h-[400px] lg:h-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-surface-dark/50"
+            >
               <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent z-10" />
               <img
                 src={HERO_IMG}
@@ -85,8 +124,11 @@ export default function HeroSection() {
               />
 
               {/* Floating card */}
-              <div className="absolute bottom-8 left-8 right-8 z-20 flex flex-col gap-4">
-                <div className="glass-panel rounded-xl p-4 flex items-center justify-between shadow-lg">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 1 }}
+                className="absolute bottom-8 left-8 right-8 z-20 flex flex-col gap-4"
+              >
+                <div className="glass-panel rounded-xl p-4 flex items-center justify-between shadow-lg backdrop-blur-md">
                   <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
                       <span className="material-symbols-outlined">soup_kitchen</span>
@@ -98,19 +140,28 @@ export default function HeroSection() {
                   </div>
                   <span className="text-xs font-bold text-green-400 bg-green-400/10 px-2 py-1 rounded">Just now</span>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            {/* Floating eco badge */}
-            <div className="absolute -right-4 top-1/4 z-30 glass-panel rounded-xl p-4 animate-bounce shadow-xl">
+            {/* Floating eco badge with reverse parallax */}
+            <motion.div 
+              style={{ y: yFloatingBadge }}
+              initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.8 }}
+              className="absolute -right-4 top-1/4 z-30 glass-panel rounded-xl p-4 shadow-xl backdrop-blur-md"
+            >
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-primary">eco</span>
+                <motion.span 
+                  animate={{ rotate: [0, 15, -15, 0] }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                  className="material-symbols-outlined text-primary"
+                >
+                  eco
+                </motion.span>
                 <div>
                   <p className="text-xs text-slate-400">CO₂ Saved</p>
                   <p className="text-sm font-bold text-white">124kg today</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
         </div>

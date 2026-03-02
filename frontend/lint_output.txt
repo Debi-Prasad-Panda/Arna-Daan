@@ -1,0 +1,61 @@
+
+> frontend@0.0.0 lint
+> eslint .
+
+
+A:\OneDrive\Desktop\Project Lipsa\frontend\src\components\CTASection.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+A:\OneDrive\Desktop\Project Lipsa\frontend\src\components\HeroSection.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+A:\OneDrive\Desktop\Project Lipsa\frontend\src\components\HowItWorks.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+A:\OneDrive\Desktop\Project Lipsa\frontend\src\components\InteractiveMap.jsx
+  128:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  126 |     if (deliveries?.length > 0) {
+  127 |       const live = deliveries[0];
+> 128 |       setActiveRoute({
+      |       ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  129 |         pickup:  { lat: 20.2961, lng: 85.8245, name: live.requestId ? `Pickup #${live.requestId.slice(-6)}` : DEMO_ROUTE.pickup.name, address: 'Live Pickup Location' },
+  130 |         dropoff: { lat: 20.2858, lng: 85.8361, name: live.volunteerName ? `Delivery by ${live.volunteerName}` : DEMO_ROUTE.dropoff.name, address: 'Live Dropoff Location' },
+  131 |         status: live.status, pickupCode: live.pickupCode,  react-hooks/set-state-in-effect
+  145:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  143 |     routeAbort.current = controller;
+  144 |
+> 145 |     setRouteLoading(true);
+      |     ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  146 |     setRoutePositions([[pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]]);
+  147 |
+  148 |     const url =                                                                                                                                                                                                                                                                                                                                               react-hooks/set-state-in-effect
+
+A:\OneDrive\Desktop\Project Lipsa\frontend\src\components\StatsSection.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+A:\OneDrive\Desktop\Project Lipsa\frontend\src\components\TrackingTimeline.jsx
+  180:86  warning  React Hook useCallback has a missing dependency: 'fetchDeliveries'. Either include it or remove the dependency array                      react-hooks/exhaustive-deps
+  181:83  warning  React Hook useCallback has missing dependencies: 'fetchListings' and 'fetchRequests'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+A:\OneDrive\Desktop\Project Lipsa\frontend\src\pages\MyClaimsPage.jsx
+  62:17  error  'useState' is not defined  no-undef
+
+A:\OneDrive\Desktop\Project Lipsa\frontend\src\store\authStore.js
+  26:18  error  'error' is defined but never used  no-unused-vars
+
+Ô£û 10 problems (8 errors, 2 warnings)
+

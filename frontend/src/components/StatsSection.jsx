@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion'
 import useListingStore from '../store/listingStore'
 import useDeliveryStore from '../store/deliveryStore'
 import useRequestStore from '../store/requestStore'
@@ -6,8 +8,8 @@ import useRequestStore from '../store/requestStore'
 function useRealStats() {
   const { listings, fetchListings }     = useListingStore()
   const { deliveries, fetchDeliveries } = useDeliveryStore()
-  const { requests, fetchRequests }     = useRequestStore()
-  useEffect(() => { fetchListings(); fetchDeliveries(); fetchRequests() }, [])
+  const { fetchRequests }               = useRequestStore()
+  useEffect(() => { fetchListings(); fetchDeliveries(); fetchRequests() }, [fetchListings, fetchDeliveries, fetchRequests])
 
   const totalMeals   = listings.reduce((s, l) => s + (Number(l.quantity) || 0), 0)
   const volunteersSet = new Set(deliveries.filter(d => d.volunteerId).map(d => d.volunteerId))
@@ -15,6 +17,22 @@ function useRealStats() {
   const delivered    = deliveries.filter(d => d.status === 'Delivered').length
 
   return { totalMeals, activeVolunteers: volunteersSet.size, activeDonors: donorsSet.size, delivered }
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2 }
+  }
+}
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, y: 0,
+    transition: { type: 'spring', stiffness: 50, damping: 15 }
+  }
 }
 
 export default function StatsSection() {
@@ -48,11 +66,18 @@ export default function StatsSection() {
   ]
 
   return (
-    <section id="impact" className="py-10 border-y border-white/5 bg-background-dark/50">
+    <section id="impact" className="py-10 border-y border-white/5 bg-background-dark/50 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          className="grid grid-cols-1 gap-8 md:grid-cols-3"
+        >
           {stats.map((stat) => (
-            <div
+            <motion.div
+              variants={cardVariants}
               key={stat.label}
               className="group relative overflow-hidden rounded-2xl bg-surface-dark p-8 border border-white/5 hover:border-primary/30 transition-colors"
             >
@@ -69,9 +94,9 @@ export default function StatsSection() {
                 <span className="material-symbols-outlined text-sm text-green-500">trending_up</span>
                 <span className="text-sm font-medium text-green-500">{stat.trend}</span>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )

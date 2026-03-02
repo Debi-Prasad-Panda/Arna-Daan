@@ -43,7 +43,7 @@ export default function ProfilePage() {
   const { deliveries, fetchDeliveries } = useDeliveryStore()
   const { requests, fetchRequests }     = useRequestStore()
 
-  useEffect(() => { fetchListings(); fetchDeliveries(); fetchRequests() }, [])
+  useEffect(() => { fetchListings(); fetchDeliveries(); fetchRequests() }, [fetchListings, fetchDeliveries, fetchRequests])
 
   // Real stats based on role
   const myListings   = listings.filter(l => l.donorId === user?.$id)

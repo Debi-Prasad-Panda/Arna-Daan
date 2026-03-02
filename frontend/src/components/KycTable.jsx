@@ -33,11 +33,11 @@ export default function KycTable() {
   const { profiles, isLoading, fetchProfiles } = useUserProfileStore()
   const [search, setSearch] = useState('')
 
-  useEffect(() => { fetchProfiles() }, [])
+  useEffect(() => { fetchProfiles() }, [fetchProfiles])
 
   // Refresh when a new user registers (Realtime on users collection)
   const usersCollectionId = import.meta.env.VITE_APPWRITE_USERS_COLLECTION_ID
-  const handleNewUser = useCallback(() => fetchProfiles(), [])
+  const handleNewUser = useCallback(() => fetchProfiles(), [fetchProfiles])
   useRealtime(usersCollectionId, handleNewUser)
 
   const filtered = profiles.filter(p =>

@@ -95,9 +95,9 @@ export default function IncomingRequests() {
   const { listings }                            = useListingStore()
   const user = useAuthStore(s => s.user)
 
-  useEffect(() => { fetchRequests() }, [])
+  useEffect(() => { fetchRequests() }, [fetchRequests])
 
-  const handleRefresh = useCallback(() => fetchRequests(), [])
+  const handleRefresh = useCallback(() => fetchRequests(), [fetchRequests])
   useRealtime(APPWRITE_CONFIG.requestsCollectionId, handleRefresh)
 
   // Build a map of listingId → listing for quick lookup

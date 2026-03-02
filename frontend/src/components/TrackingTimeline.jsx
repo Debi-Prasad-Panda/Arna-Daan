@@ -73,10 +73,11 @@ const DIET_COLOR = {
 }
 
 function RequestCard({ request, listing, onAccept, accepting }) {
+  const [now] = useState(() => Date.now())
   const dietCls = DIET_COLOR[listing?.diet?.toUpperCase()] || 'bg-[#3a2c27] text-[#bca39a] border-[#5a433a]'
   const timeAgo = request.$createdAt
     ? (() => {
-        const diff = (Date.now() - new Date(request.$createdAt)) / 60000
+        const diff = (now - new Date(request.$createdAt)) / 60000
         if (diff < 1)  return 'just now'
         if (diff < 60) return `${Math.round(diff)}m ago`
         return `${Math.round(diff / 60)}h ago`
@@ -133,7 +134,7 @@ function RequestCard({ request, listing, onAccept, accepting }) {
 
       {/* Best before warning */}
       {listing?.bestBefore && (() => {
-        const diff = (new Date(listing.bestBefore) - Date.now()) / 3600000
+        const diff = (new Date(listing.bestBefore) - now) / 3600000
         if (diff < 0)   return <p className="text-[10px] text-red-400 font-semibold">⚠ Listing has expired</p>
         if (diff < 6)   return <p className="text-[10px] text-yellow-400 font-semibold">⏰ Expires in {Math.round(diff)}h — act fast!</p>
         return null
@@ -173,11 +174,11 @@ export default function TrackingTimeline() {
     if (user) fetchDeliveries(user.$id)
     fetchRequests()   // all pending requests (no filter → fetch all)
     fetchListings()
-  }, [user])
+  }, [user, fetchDeliveries, fetchRequests, fetchListings])
 
   // Realtime refresh
-  const onDeliveryEvent = useCallback(() => { if (user) fetchDeliveries(user.$id) }, [user])
-  const onRequestEvent  = useCallback(() => { fetchRequests(); fetchListings() }, [])
+  const onDeliveryEvent = useCallback(() => { if (user) fetchDeliveries(user.$id) }, [user, fetchDeliveries])
+  const onRequestEvent  = useCallback(() => { fetchRequests(); fetchListings() }, [fetchRequests, fetchListings])
   useRealtime(APPWRITE_CONFIG.deliveriesCollectionId, onDeliveryEvent)
   useRealtime(APPWRITE_CONFIG.requestsCollectionId,   onRequestEvent)
 

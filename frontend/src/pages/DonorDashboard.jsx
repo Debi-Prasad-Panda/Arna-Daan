@@ -4,7 +4,7 @@ import ActiveListings from '../components/ActiveListings'
 import IncomingRequests from '../components/IncomingRequests'
 import useAuthStore from '../store/authStore'
 import useListingStore from '../store/listingStore'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 
 const STATS = [
   {
@@ -60,7 +60,7 @@ function StatCard({ label, value, unit, trend, trendUp, icon, iconColor, progres
 export default function DonorDashboard() {
   const user = useAuthStore(state => state.user)
   const { listings, fetchListings } = useListingStore()
-  useEffect(() => { fetchListings() }, [])
+  useEffect(() => { fetchListings() }, [fetchListings])
 
   // Compute real stats from this donor's listings
   const myListings   = listings.filter(l => l.donorId === user?.$id)

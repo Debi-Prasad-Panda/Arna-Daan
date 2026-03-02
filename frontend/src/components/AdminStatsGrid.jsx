@@ -41,12 +41,12 @@ export default function AdminStatsGrid() {
   useEffect(() => {
     Promise.all([fetchListings(), fetchRequests(), fetchDeliveries(), fetchProfiles()])
       .finally(() => setLoading(false))
-  }, [])
+  }, [fetchListings, fetchRequests, fetchDeliveries, fetchProfiles])
 
   // Realtime refresh on any change
   const refresh = useCallback(() => {
     fetchListings(); fetchRequests(); fetchDeliveries(); fetchProfiles()
-  }, [])
+  }, [fetchListings, fetchRequests, fetchDeliveries, fetchProfiles])
   useRealtime(APPWRITE_CONFIG.listingsCollectionId,   refresh)
   useRealtime(APPWRITE_CONFIG.requestsCollectionId,   refresh)
   useRealtime(APPWRITE_CONFIG.deliveriesCollectionId, refresh)
