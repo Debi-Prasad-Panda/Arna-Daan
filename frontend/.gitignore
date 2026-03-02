@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Tests
+.testsprite/
+testsprite_tests/
+test_results/

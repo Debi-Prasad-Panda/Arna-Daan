@@ -1,6 +1,10 @@
 node_modules/
+.env
+.env.*
+
+# Tests
 .testsprite/
 testsprite_tests/
 test_results/
-backend_tests/
-frontend_tests/
+coverage/
+.nyc_output/
