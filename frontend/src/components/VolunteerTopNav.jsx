@@ -22,10 +22,10 @@ export default function VolunteerTopNav() {
       <div className="flex items-center justify-between px-4 md:px-6 py-3.5">
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <Link to="/" className="size-8 text-primary flex items-center justify-center">
+          <Link to="/logistics" className="size-8 text-primary flex items-center justify-center">
             <span className="material-symbols-outlined text-[26px]">volunteer_activism</span>
           </Link>
-          <Link to="/"><h2 className="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Annadaan</h2></Link>
+          <Link to="/logistics"><h2 className="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Annadaan</h2></Link>
         </div>
 
         {/* Desktop nav */}

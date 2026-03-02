@@ -23,7 +23,7 @@ export default function ReceiverTopNav() {
       <div className="mx-auto max-w-7xl w-full flex items-center justify-between gap-3 px-4 md:px-6 lg:px-12 py-3.5">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 text-primary shrink-0">
+        <Link to="/feed" className="flex items-center gap-2.5 text-primary shrink-0">
           <div className="size-8 rounded-full bg-primary/20 flex items-center justify-center">
             <span className="material-symbols-outlined text-primary text-[18px]">volunteer_activism</span>
           </div>
