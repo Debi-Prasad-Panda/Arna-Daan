@@ -62,6 +62,7 @@ async function setupDatabase() {
     await databases.createStringAttribute(db.$id, listingsCol.$id, 'status', 255, false, 'Active');
     await databases.createStringAttribute(db.$id, listingsCol.$id, 'donorId', 255, true);
     await databases.createStringAttribute(db.$id, listingsCol.$id, 'donorName', 255, true);
+    await databases.createStringAttribute(db.$id, listingsCol.$id, 'address', 512, false);
     await databases.createStringAttribute(db.$id, listingsCol.$id, 'imageUrl', 2048, false);
     await sleep(2500); // Wait for attributes to deploy
 

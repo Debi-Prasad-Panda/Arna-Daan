@@ -13,6 +13,7 @@ const dietOptions = [
 export default function CreateListingForm() {
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('Cooked Meals')
+  const [address, setAddress] = useState('')
   const [quantity, setQuantity] = useState('')
   const [bestBefore, setBestBefore] = useState('')
   const [diet, setDiet] = useState('VEG')
@@ -69,10 +70,12 @@ export default function CreateListingForm() {
         status: 'Active',
         donorId: user.$id,
         donorName: user.name,
+        ...(address.trim() ? { address: address.trim() } : {}),
         ...(imageUrl ? { imageUrl } : {}),
       })
       // Reset form
       setTitle('')
+      setAddress('')
       setQuantity('')
       setBestBefore('')
       setSafety(false)
@@ -130,6 +133,21 @@ export default function CreateListingForm() {
                 </select>
                 <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#bca39a] pointer-events-none">expand_more</span>
               </div>
+            </div>
+          </div>
+
+          {/* Pickup Address */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-[#bca39a]">Pickup Address <span className="text-[#5a433a]">(helps NGOs get directions)</span></label>
+            <div className="relative">
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#bca39a] text-[18px]">location_on</span>
+              <input
+                type="text"
+                value={address}
+                onChange={e => setAddress(e.target.value)}
+                placeholder="e.g., 12 MG Road, Bhubaneswar, Odisha"
+                className="w-full bg-[#181210] border border-[#3a2c27] rounded-lg pl-11 pr-4 py-3 text-white placeholder-[#bca39a]/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+              />
             </div>
           </div>
 

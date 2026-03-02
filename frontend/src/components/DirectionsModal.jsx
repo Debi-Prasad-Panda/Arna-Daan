@@ -90,10 +90,10 @@ export default function DirectionsModal({ listing, onClose }) {
         setUserPos(user)
 
         // 2. Geocode the donor's location
-        // Try address first, fall back to donorName + city
-        const geoQuery = listing.address
-          ? listing.address
-          : `${listing.donorName || listing.title}, Bhubaneswar, India`
+        // Try address first, then title + city, then just city center
+        const geoQuery = listing.address?.trim()
+          ? listing.address.trim()
+          : `Bhubaneswar, Odisha, India`
         const pickup = await geocode(geoQuery)
         if (abortRef.current) return
         setPickupPos({ lat: pickup.lat, lng: pickup.lng, label: pickup.display })
