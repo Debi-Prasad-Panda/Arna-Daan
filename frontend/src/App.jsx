@@ -15,6 +15,7 @@ import Signup from './pages/Signup'
 import CommunityPage from './pages/CommunityPage'
 import ProfilePage from './pages/ProfilePage'
 import MyClaimsPage from './pages/MyClaimsPage'
+import ListingDetailsPage from './pages/ListingDetailsPage'
 import NotFound from './pages/NotFound'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="/admin/settings"   element={<AdminSettings />} />
           <Route path="/community"        element={<CommunityPage />} />
           <Route path="/profile"          element={<ProfilePage />} />
+          <Route path="/listing/:id"      element={<ListingDetailsPage />} />
         </Route>
 
         {/* 404 catch-all */}

@@ -1,5 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useListingStore from '../store/listingStore'
+import { toast } from 'react-hot-toast'
+import EditListingModal from './EditListingModal'
 
 // Safe fallback for date formatting without adding dependencies right away
 const getExpiryText = (dateString, status) => {
@@ -38,7 +40,7 @@ const getStatusStyle = (status) => {
 
 const DEFAULT_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUNyGSEU1fovxDPHC5CW9NhKOYvP4Qc8wkDwNYtJiEHhCYU1uZAVGRQbZ9ReoqT2iaTASE3ByNloa9kM6ASlSh4yv1ffZxCNrDi3aoYTaXKUeTtHc9EjnjBC6Ue_NNZ29EjnU8h97PuclaWAlglX_Vs0vYfNU6B1DSBL9RRFKGWXI9BzfBwSeL65rprr7kyaqr-lBT-8_y3D3L2uHQWKm_CXT4WagxYhJtSDYRuGZIQlHwclRgIslQO7X1U2N71ON6oRlsJ_X3sQ'
 
-function ListingCard({ listing }) {
+function ListingCard({ listing, onEdit }) {
   const isClosed = listing.status === 'Closed'
   const dietColor = getDietStyle(listing.diet)
   const statusColor = getStatusStyle(listing.status)
@@ -47,8 +49,24 @@ function ListingCard({ listing }) {
   // Basic heuristic: if it expires in < 24h, mark urgent
   const isUrgent = listing.status === 'Active' && expiryText.includes('Expires in') && !expiryText.includes('d')
 
+  const deleteListing = useListingStore(state => state.deleteListing)
+  const isDeleting = useListingStore(state => state.isLoading)
+  const [showOptions, setShowOptions] = useState(false)
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this listing?")) {
+        try {
+            await deleteListing(listing.$id)
+            toast.success("Listing deleted")
+        } catch (err) {
+            toast.error(err.message || 'Failed to delete')
+        }
+    }
+    setShowOptions(false)
+  }
+
   return (
-    <div className={`bg-[#23140f] border border-[#3a2c27] rounded-xl p-4 flex gap-4 hover:border-primary/50 transition-colors group ${isClosed ? 'opacity-60 hover:opacity-100' : ''}`}>
+    <div className={`bg-[#23140f] border border-[#3a2c27] rounded-xl p-4 flex gap-4 hover:border-primary/50 transition-colors group relative ${isClosed ? 'opacity-60 hover:opacity-100' : ''}`}>
       <div className="w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-lg overflow-hidden relative border border-[#3a2c27]">
         <img
           src={listing.imageUrl || DEFAULT_IMG}
@@ -63,7 +81,22 @@ function ListingCard({ listing }) {
         <div>
           <div className="flex justify-between items-start">
             <h3 className="font-bold text-base leading-tight line-clamp-1 text-white">{listing.title}</h3>
-            <span className="material-symbols-outlined text-[#bca39a] cursor-pointer hover:text-white text-lg flex-shrink-0 ml-2">more_vert</span>
+            
+            <div className="relative">
+              <button onClick={() => setShowOptions(!showOptions)} className="material-symbols-outlined text-[#bca39a] hover:text-white text-lg flex-shrink-0 ml-2">more_vert</button>
+              {showOptions && (
+                <div className="absolute right-0 top-6 mt-1 w-32 bg-[#181210] border border-[#3a2c27] rounded-lg shadow-xl overflow-hidden z-20">
+                  <button onClick={() => { setShowOptions(false); onEdit(listing); }} className="w-full text-left px-4 py-2.5 text-sm text-white hover:bg-[#2a1d18] transition-colors flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px]">edit</span> Edit
+                  </button>
+                  <button onClick={handleDelete} disabled={isDeleting} className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-900/20 transition-colors flex items-center gap-2 border-t border-[#3a2c27]">
+                    <span className="material-symbols-outlined text-[18px]">{isDeleting ? "refresh" : "delete"}</span> Delete
+                  </button>
+                </div>
+              )}
+            </div>
+            {/* Click outside to close map options overlay (simplified hack for overlay) */}
+            {showOptions && <div className="fixed inset-0 z-10" onClick={() => setShowOptions(false)} />}
           </div>
           <p className="text-[#bca39a] text-sm mt-1">{listing.quantity ? `Approx. ${listing.quantity} servings` : listing.category}</p>
         </div>
@@ -78,9 +111,11 @@ function ListingCard({ listing }) {
         <div className="mt-3 flex gap-2">
           <button 
             onClick={() => {
-              import('react-hot-toast').then(({ default: toast }) => {
-                toast(isClosed ? 'Opening listing details...' : 'Opening editor...', { icon: isClosed ? '📋' : '✏️' });
-              });
+              if (isClosed) {
+                toast('Listing is marked completed.', { icon: '📋' });
+              } else {
+                onEdit(listing);
+              }
             }}
             className="flex-1 bg-[#3a2c27] hover:bg-white hover:text-black text-white text-xs font-bold py-2 rounded-lg transition-colors"
           >
@@ -88,9 +123,7 @@ function ListingCard({ listing }) {
           </button>
           <button 
             onClick={() => {
-              import('react-hot-toast').then(({ default: toast }) => {
-                toast(`Current status: ${listing.status || 'Active'}`);
-              });
+              toast(`Current status: ${listing.status || 'Active'}`);
             }}
             className={`flex-1 text-xs font-bold py-2 rounded-lg border ${statusColor}`}
           >
@@ -107,6 +140,8 @@ export default function ActiveListings() {
   const fetchListings = useListingStore(state => state.fetchListings)
   const isLoading = useListingStore(state => state.isLoading)
   const error = useListingStore(state => state.error)
+
+  const [editingListing, setEditingListing] = useState(null)
 
   useEffect(() => {
     fetchListings()
@@ -141,7 +176,7 @@ export default function ActiveListings() {
             <p className="text-sm text-[#5a433a] mt-1">Create your first donation to see it here.</p>
           </div>
         ) : (
-          listings.map((l) => <ListingCard key={l.$id} listing={l} />)
+          listings.map((l) => <ListingCard key={l.$id} listing={l} onEdit={setEditingListing} />)
         )}
       </div>
       
@@ -160,6 +195,8 @@ export default function ActiveListings() {
         </div>
         <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
       </div>
+
+      <EditListingModal listing={editingListing} onClose={() => setEditingListing(null)} />
     </div>
   )
 }

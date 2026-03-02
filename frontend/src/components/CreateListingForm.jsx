@@ -17,6 +17,7 @@ export default function CreateListingForm() {
   const [quantity, setQuantity] = useState('')
   const [bestBefore, setBestBefore] = useState('')
   const [diet, setDiet] = useState('VEG')
+  const [ingredients, setIngredients] = useState('')
   const [safety, setSafety] = useState(false)
   
   const [formError, setFormError] = useState('')
@@ -71,6 +72,7 @@ export default function CreateListingForm() {
         donorId: user.$id,
         donorName: user.name,
         ...(address.trim() ? { address: address.trim() } : {}),
+        ...(ingredients.trim() ? { ingredients: ingredients.trim() } : {}),
         ...(imageUrl ? { imageUrl } : {}),
       })
       // Reset form
@@ -78,6 +80,7 @@ export default function CreateListingForm() {
       setAddress('')
       setQuantity('')
       setBestBefore('')
+      setIngredients('')
       setSafety(false)
       setImageFile(null)
       setImagePreview(null)
@@ -198,6 +201,18 @@ export default function CreateListingForm() {
                 </label>
               ))}
             </div>
+          </div>
+
+          {/* Ingredients (optional) */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-[#bca39a]">Ingredients <span className="text-[#5a433a]">(optional, helps people with allergies)</span></label>
+            <textarea
+              value={ingredients}
+              onChange={e => setIngredients(e.target.value)}
+              placeholder="e.g., Rice, Potatoes, Tomatoes, Spices..."
+              rows="3"
+              className="w-full bg-[#181210] border border-[#3a2c27] rounded-lg px-4 py-3 text-white placeholder-[#bca39a]/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none"
+            />
           </div>
 
           {/* Upload */}

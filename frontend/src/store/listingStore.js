@@ -82,6 +82,50 @@ const useListingStore = create((set) => ({
             set({ error: error.message, isLoading: false });
             throw error;
         }
+    },
+
+    updateListing: async (documentId, dataToUpdate) => {
+        set({ isLoading: true, error: null });
+        try {
+            const { databaseId, listingsCollectionId } = APPWRITE_CONFIG;
+            const updatedListing = await databases.updateDocument(
+                databaseId,
+                listingsCollectionId,
+                documentId,
+                dataToUpdate
+            );
+
+            set((state) => ({
+                listings: state.listings.map(item => 
+                    item.$id === documentId ? updatedListing : item
+                ),
+                isLoading: false
+            }));
+            
+            return updatedListing;
+        } catch (error) {
+            console.error("Failed to update listing", error);
+            set({ error: error.message, isLoading: false });
+            throw error;
+        }
+    },
+
+    deleteListing: async (documentId) => {
+        set({ isLoading: true, error: null });
+        try {
+            const { databaseId, listingsCollectionId } = APPWRITE_CONFIG;
+            await databases.deleteDocument(databaseId, listingsCollectionId, documentId);
+
+            set((state) => ({
+                listings: state.listings.filter(item => item.$id !== documentId),
+                isLoading: false
+            }));
+            
+        } catch (error) {
+            console.error("Failed to delete listing", error);
+            set({ error: error.message, isLoading: false });
+            throw error;
+        }
     }
 }));
 

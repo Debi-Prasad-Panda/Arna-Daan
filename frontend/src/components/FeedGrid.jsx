@@ -193,26 +193,19 @@ function FeedCard({ card, index = 0 }) {
             Directions
           </button>
 
-          {/* Claim Now */}
+          {/* Details / Claim Now */}
           <button
             onClick={async () => {
-              const { default: toast } = await import('react-hot-toast')
               if (card._isMock) {
+                const { default: toast } = await import('react-hot-toast')
                 toast.success('Demo card — real claims work with live Appwrite listings!')
                 return
               }
-              const toastId = toast.loading('Sending request…')
-              try {
-                const store = useRequestStore.getState()
-                await store.createRequest(cardId)
-                toast.success('Food claim sent! The donor will be notified.', { id: toastId })
-              } catch (e) {
-                toast.error(e.message || 'Failed to claim food', { id: toastId })
-              }
+              window.location.href = `/listing/${cardId}`
             }}
             className="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2"
           >
-            <span>Claim Now</span>
+            <span>Details</span>
             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
         </div>
