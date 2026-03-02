@@ -1,0 +1,6 @@
+node_modules/
+.testsprite/
+testsprite_tests/
+test_results/
+backend_tests/
+frontend_tests/

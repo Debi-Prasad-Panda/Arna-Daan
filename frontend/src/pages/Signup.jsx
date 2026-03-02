@@ -10,7 +10,7 @@ const ROLES = [
 
 export default function Signup() {
   const navigate = useNavigate()
-  const [selectedRole, setSelectedRole] = useState('donor')
+  const [selectedRole, setSelectedRole] = useState(null)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -24,6 +24,10 @@ export default function Signup() {
     e.preventDefault()
     if (!name || !email || !password) {
       setError('Please fill in all fields.')
+      return
+    }
+    if (!selectedRole) {
+      setError('Please select a role to continue.')
       return
     }
     setError('')
