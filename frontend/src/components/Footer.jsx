@@ -42,7 +42,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-16 border-t border-white/10 pt-8">
-          <p className="text-xs text-slate-500">© 2025 Annadaan Foundation. All rights reserved.</p>
+          <p className="text-xs text-slate-500">© 2025 Annadaan Foundation. All rights reserved. Built by Lipsa Mohanty.</p>
         </div>
       </div>
     </footer>
